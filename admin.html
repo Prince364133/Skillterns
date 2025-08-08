@@ -165,7 +165,39 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             max-width: 600px; /* Increased for edit form */
             width: 90%;
+            max-height: 90vh; /* Limit height to 90% of viewport */
+            overflow-y: auto; /* Enable vertical scrolling */
             text-align: left; /* Align text left for forms */
+        }
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                max-height: 95vh;
+            }
+            .container {
+                width: 100%;
+                margin: 10px;
+                min-height: 90vh;
+            }
+            .admin-section {
+                padding: 20px;
+            }
+            .data-table {
+                font-size: 0.8rem;
+            }
+            .data-table th, .data-table td {
+                padding: 8px 10px;
+            }
+            .btn-primary, .btn-secondary {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            .form-input {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
         }
         .mcq-option-group {
             display: flex;
@@ -228,6 +260,48 @@
         .data-table tbody tr:hover {
             background-color: #f0f4f8;
         }
+        /* Additional mobile responsive table improvements */
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .data-table {
+                min-width: 600px; /* Ensure table doesn't get too cramped */
+            }
+            .mcq-question-card {
+                padding: 10px;
+            }
+            .mcq-option-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .mcq-option-group input[type="text"] {
+                width: 100%;
+            }
+            .tab-button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+                margin-bottom: 5px;
+            }
+            .flex.gap-4 {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .flex.gap-4 > * {
+                width: 100%;
+            }
+            .admin-tab-content {
+                padding: 0 10px;
+            }
+            .admin-tab-content h2 {
+                font-size: 1.5rem;
+            }
+            .admin-tab-content h3 {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -245,7 +319,7 @@
 
             <p class="text-gray-600 mb-6">Welcome, Administrator! Session ID: <span id="adminUserIdDisplay" class="font-mono text-sm"></span></p>
 
-            <div class="flex space-x-4 mb-8">
+            <div class="flex flex-wrap gap-2 mb-8">
                 <button id="showCreateCategoryBtn" class="tab-button active">Create Category</button>
                 <button id="showManageCategoriesBtn" class="tab-button">Manage Categories</button>
                 <button id="showCreateTestBtn" class="tab-button">Create Test</button>
@@ -368,7 +442,7 @@
             <!-- Manage Users Section -->
             <div id="manageUsersSection" class="admin-tab-content w-full max-w-4xl hidden">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Manage Student Users</h2>
-                <button id="addDummyStudentBtn" class="btn-primary mb-4">Add Dummy Student (for testing)</button>
+                <p class="text-gray-600 mb-4">View and manage registered student users. Students are automatically added when they sign up through the student portal.</p>
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
@@ -377,6 +451,7 @@
                                 <th>Email</th>
                                 <th>Phone Number</th>
                                 <th>User ID</th>
+                                <th>Registration Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -508,7 +583,7 @@
 
         // Manage Users Section
         const usersTableBody = document.getElementById('usersTableBody');
-        const addDummyStudentBtn = document.getElementById('addDummyStudentBtn');
+
         const migrateDataBtn = document.getElementById('migrateDataBtn');
 
         // Custom Modal Elements (for alerts/confirmations)
@@ -1239,16 +1314,18 @@
         function renderUsersTable(students) {
             usersTableBody.innerHTML = '';
             if (students.length === 0) {
-                usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500">No student users found.</td></tr>';
+                usersTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500 py-8">No student users found. Students will appear here once they sign up through the student portal.</td></tr>';
                 return;
             }
             students.forEach(student => {
                 const row = document.createElement('tr');
+                const registrationDate = student.createdAt ? new Date(student.createdAt.toDate ? student.createdAt.toDate() : student.createdAt).toLocaleDateString() : 'N/A';
                 row.innerHTML = `
                     <td>${student.name || 'N/A'}</td>
                     <td>${student.email || 'N/A'}</td>
                     <td>${student.phoneNumber || 'N/A'}</td>
                     <td class="font-mono text-sm">${student.uid}</td>
+                    <td>${registrationDate}</td>
                     <td>
                         <button class="btn-danger delete-user-btn" data-id="${student.uid}">Delete</button>
                     </td>
@@ -1287,33 +1364,7 @@
             }
         }
 
-        /**
-         * Adds a dummy student user to the Firestore 'students' collection.
-         */
-        addDummyStudentBtn.addEventListener('click', async () => {
-            showLoading();
-            try {
-                const dummyUid = 'dummy_' + Math.random().toString(36).substring(2, 15);
-                const dummyName = `Student ${Math.floor(Math.random() * 1000)}`;
-                const dummyEmail = `student${Math.floor(Math.random() * 1000)}@example.com`;
-                const dummyPhone = `+1-${Math.floor(100 + Math.random() * 900)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-                const studentDocRef = doc(db, `artifacts/${appId}/public/data/students`, dummyUid);
-                await setDoc(studentDocRef, { // Use setDoc with explicit ID for students
-                    uid: dummyUid,
-                    name: dummyName,
-                    email: dummyEmail,
-                    phoneNumber: dummyPhone,
-                    createdAt: new Date()
-                });
-                showCustomModal("Success", `Dummy student "${dummyName}" added!`);
-            } catch (error) {
-                console.error("Error adding dummy student:", error);
-                showCustomModal("Error", "Failed to add dummy student.");
-            } finally {
-                hideLoading();
-            }
-        });
 
         /**
          * Migrates old test data format to new format for compatibility with student side.
