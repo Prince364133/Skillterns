@@ -286,9 +286,11 @@
     <!-- Main Header/Navigation -->
     <header class="bg-white shadow-sm py-4">
         <nav class="container flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-800">Student Portal</h1>
+            <h1 class="text-2xl font-bold text-gray-800">Skillyterns</h1>
             <div id="navLinks" class="hidden md:flex items-center space-x-4">
                 <a href="#" id="homeNav" class="nav-link text-gray-700 font-medium">Home</a>
+                <a href="#" id="postsNav" class="nav-link text-gray-700 font-medium">Posts</a>
+                <a href="#" id="categoriesNav" class="nav-link text-gray-700 font-medium">Categories</a>
                 <a href="#" id="allTestsNav" class="nav-link text-gray-700 font-medium">All Tests</a>
                 <a href="#" id="logoutNav" class="nav-link text-red-600 font-medium"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
             </div>
@@ -300,6 +302,8 @@
         <!-- Mobile Navigation Menu -->
         <div id="mobileNavMenu" class="md:hidden bg-white shadow-md py-2 px-4 hidden">
             <a href="#" id="homeNavMobile" class="block nav-link text-gray-700 font-medium py-2">Home</a>
+            <a href="#" id="postsNavMobile" class="block nav-link text-gray-700 font-medium py-2">Posts</a>
+            <a href="#" id="categoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Categories</a>
             <a href="#" id="allTestsNavMobile" class="block nav-link text-gray-700 font-medium py-2">All Tests</a>
             <a href="#" id="logoutNavMobile" class="block nav-link text-red-600 font-medium py-2"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
         </div>
@@ -357,13 +361,71 @@
                 <p id="firstLoginMessage" class="text-sm mt-1 hidden">It's great to have you here. Let's start learning!</p>
             </div>
 
-            <!-- Home Section: Categories -->
+            <!-- Home Section: Latest Posts and Tests -->
             <div id="homeSection" class="mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Explore Test Categories</h2>
-                <div id="categoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Categories will be loaded here dynamically -->
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Welcome to Skillyterns</h2>
+                
+                <!-- Latest Posts Section -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Latest Study Posts</h3>
+                    <div id="latestPostsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Latest posts will be loaded here dynamically -->
+                    </div>
+                    <p id="noPostsMessage" class="text-gray-600 text-center mt-8 hidden">No posts found. Please check back later!</p>
                 </div>
-                <p id="noCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No categories found. Please check back later!</p>
+
+                <!-- Latest Tests Section -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Latest Tests</h3>
+                    <div id="latestTestsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Latest tests will be loaded here dynamically -->
+                    </div>
+                    <p id="noLatestTestsMessage" class="text-gray-600 text-center mt-8 hidden">No tests found. Please check back later!</p>
+                </div>
+
+                <!-- Test Categories Section -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Explore Test Categories</h3>
+                    <div id="categoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Categories will be loaded here dynamically -->
+                    </div>
+                    <p id="noCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No categories found. Please check back later!</p>
+                </div>
+            </div>
+
+            <!-- Posts Section -->
+            <div id="postsSection" class="hidden mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Study Posts</h2>
+                <div class="mb-6">
+                    <input type="text" id="postSearchInput" class="input-field" placeholder="Search posts by title...">
+                </div>
+                <div id="postsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- All posts will be loaded here dynamically -->
+                </div>
+                <p id="noPostsFoundMessage" class="text-gray-600 text-center mt-8 hidden">No posts found. Try adjusting your search!</p>
+            </div>
+
+            <!-- Categories Section -->
+            <div id="categoriesSection" class="hidden mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Categories</h2>
+                
+                <!-- Test Categories -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Test Categories</h3>
+                    <div id="testCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Test categories will be loaded here dynamically -->
+                    </div>
+                    <p id="noTestCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No test categories found.</p>
+                </div>
+
+                <!-- Post Categories -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Post Categories</h3>
+                    <div id="postCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Post categories will be loaded here dynamically -->
+                    </div>
+                    <p id="noPostCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No post categories found.</p>
+                </div>
             </div>
 
             <!-- All Tests Section -->
@@ -530,9 +592,13 @@
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileNavMenu = document.getElementById('mobileNavMenu');
         const homeNav = document.getElementById('homeNav');
+        const postsNav = document.getElementById('postsNav');
+        const categoriesNav = document.getElementById('categoriesNav');
         const allTestsNav = document.getElementById('allTestsNav');
         const logoutNav = document.getElementById('logoutNav');
         const homeNavMobile = document.getElementById('homeNavMobile');
+        const postsNavMobile = document.getElementById('postsNavMobile');
+        const categoriesNavMobile = document.getElementById('categoriesNavMobile');
         const allTestsNavMobile = document.getElementById('allTestsNavMobile');
         const logoutNavMobile = document.getElementById('logoutNavMobile');
 
@@ -541,8 +607,23 @@
         const firstLoginMessage = document.getElementById('firstLoginMessage');
 
         const homeSection = document.getElementById('homeSection');
+        const latestPostsContainer = document.getElementById('latestPostsContainer');
+        const latestTestsContainer = document.getElementById('latestTestsContainer');
         const categoriesContainer = document.getElementById('categoriesContainer');
         const noCategoriesMessage = document.getElementById('noCategoriesMessage');
+        const noPostsMessage = document.getElementById('noPostsMessage');
+        const noLatestTestsMessage = document.getElementById('noLatestTestsMessage');
+
+        const postsSection = document.getElementById('postsSection');
+        const postSearchInput = document.getElementById('postSearchInput');
+        const postsContainer = document.getElementById('postsContainer');
+        const noPostsFoundMessage = document.getElementById('noPostsFoundMessage');
+
+        const categoriesSection = document.getElementById('categoriesSection');
+        const testCategoriesContainer = document.getElementById('testCategoriesContainer');
+        const postCategoriesContainer = document.getElementById('postCategoriesContainer');
+        const noTestCategoriesMessage = document.getElementById('noTestCategoriesMessage');
+        const noPostCategoriesMessage = document.getElementById('noPostCategoriesMessage');
 
         const allTestsSection = document.getElementById('allTestsSection');
         const testSearchInput = document.getElementById('testSearchInput');
@@ -595,6 +676,8 @@
 
         function hideAllSections() {
             homeSection.classList.add('hidden');
+            postsSection.classList.add('hidden');
+            categoriesSection.classList.add('hidden');
             allTestsSection.classList.add('hidden');
             testPageSection.classList.add('hidden');
             resultsSection.classList.add('hidden');
@@ -739,14 +822,44 @@
         homeNav.addEventListener('click', (e) => {
             e.preventDefault();
             showSection(homeSection);
+            loadLatestPosts();
+            loadLatestTests();
             loadCategories();
             loadPastResults(); // Load past results on home/dashboard
         });
         homeNavMobile.addEventListener('click', (e) => {
             e.preventDefault();
             showSection(homeSection);
+            loadLatestPosts();
+            loadLatestTests();
             loadCategories();
             loadPastResults();
+            mobileNavMenu.classList.add('hidden');
+        });
+
+        postsNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(postsSection);
+            loadPosts();
+        });
+        postsNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(postsSection);
+            loadPosts();
+            mobileNavMenu.classList.add('hidden');
+        });
+
+        categoriesNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(categoriesSection);
+            loadCategories();
+            loadPostCategories();
+        });
+        categoriesNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(categoriesSection);
+            loadCategories();
+            loadPostCategories();
             mobileNavMenu.classList.add('hidden');
         });
 
@@ -802,6 +915,178 @@
             } catch (error) {
                 console.error('Error loading categories:', error);
                 showMessage('Failed to load categories. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadLatestPosts() {
+            showLoading();
+            latestPostsContainer.innerHTML = '';
+            noPostsMessage.classList.add('hidden');
+            try {
+                const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
+                const q = query(postsColRef, orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noPostsMessage.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                let count = 0;
+                querySnapshot.forEach(doc => {
+                    if (count >= 6) return; // Show only latest 6 posts
+                    const postData = doc.data();
+                    const postCard = document.createElement('div');
+                    postCard.className = 'card p-6';
+                    postCard.innerHTML = `
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${postData.title}</h3>
+                        <p class="text-gray-600 mb-2 text-sm">${postData.description.substring(0, 100)}${postData.description.length > 100 ? '...' : ''}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">${postData.category || 'Uncategorized'}</span>
+                            <span class="text-sm text-gray-500">${postData.createdAt ? postData.createdAt.toDate().toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                        ${postData.links && postData.links.length > 0 ? `
+                            <div class="mt-3">
+                                <a href="${postData.links[0]}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <i class="fas fa-external-link-alt mr-1"></i>View Resource
+                                </a>
+                            </div>
+                        ` : ''}
+                    `;
+                    latestPostsContainer.appendChild(postCard);
+                    count++;
+                });
+
+            } catch (error) {
+                console.error('Error loading latest posts:', error);
+                showMessage('Failed to load latest posts. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadLatestTests() {
+            showLoading();
+            latestTestsContainer.innerHTML = '';
+            noLatestTestsMessage.classList.add('hidden');
+            try {
+                const testsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'tests');
+                const q = query(testsColRef, orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noLatestTestsMessage.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                let count = 0;
+                querySnapshot.forEach(doc => {
+                    if (count >= 6) return; // Show only latest 6 tests
+                    const testData = doc.data();
+                    const testCard = document.createElement('div');
+                    testCard.className = 'card test-card p-6';
+                    testCard.innerHTML = `
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${testData.title}</h3>
+                        <p class="text-gray-600 mb-2">${testData.category || 'Uncategorized'}</p>
+                        <p class="text-sm text-gray-500 mb-4">${testData.questions ? testData.questions.length : 0} questions</p>
+                        <button class="btn-primary w-full" onclick="startTest('${doc.id}', '${testData.title}')">
+                            Start Test
+                        </button>
+                    `;
+                    latestTestsContainer.appendChild(testCard);
+                    count++;
+                });
+
+            } catch (error) {
+                console.error('Error loading latest tests:', error);
+                showMessage('Failed to load latest tests. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadPosts() {
+            showLoading();
+            postsContainer.innerHTML = '';
+            noPostsFoundMessage.classList.add('hidden');
+            try {
+                const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
+                const q = query(postsColRef, orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noPostsFoundMessage.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const postData = doc.data();
+                    const postCard = document.createElement('div');
+                    postCard.className = 'card p-6';
+                    postCard.innerHTML = `
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${postData.title}</h3>
+                        <p class="text-gray-600 mb-2">${postData.description}</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm text-gray-500">${postData.category || 'Uncategorized'}</span>
+                            <span class="text-sm text-gray-500">${postData.createdAt ? postData.createdAt.toDate().toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                        ${postData.links && postData.links.length > 0 ? `
+                            <div class="space-y-2">
+                                ${postData.links.map(link => `
+                                    <a href="${link}" target="_blank" class="block text-blue-600 hover:text-blue-800 text-sm">
+                                        <i class="fas fa-external-link-alt mr-1"></i>${link.includes('youtube.com') ? 'Watch Video' : 'View Resource'}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    `;
+                    postsContainer.appendChild(postCard);
+                });
+
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                showMessage('Failed to load posts. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadPostCategories() {
+            showLoading();
+            postCategoriesContainer.innerHTML = '';
+            noPostCategoriesMessage.classList.add('hidden');
+            try {
+                const postCategoriesColRef = collection(db, 'artifacts', appId, 'public', 'data', 'postCategories');
+                const querySnapshot = await getDocs(postCategoriesColRef);
+
+                if (querySnapshot.empty) {
+                    noPostCategoriesMessage.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const categoryData = doc.data();
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'card p-6';
+                    categoryCard.innerHTML = `
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${categoryData.title}</h3>
+                        <p class="text-gray-600 mb-4">${categoryData.description || 'No description available.'}</p>
+                        <button class="btn-primary w-full" onclick="loadPostsByCategory('${categoryData.title}')">
+                            View Posts
+                        </button>
+                    `;
+                    postCategoriesContainer.appendChild(categoryCard);
+                });
+
+            } catch (error) {
+                console.error('Error loading post categories:', error);
+                showMessage('Failed to load post categories. Please try again.');
             } finally {
                 hideLoading();
             }
@@ -1122,8 +1407,16 @@
                     });
                 });
 
-                // Sort results by score (descending), then by submittedAt (ascending)
-                results.sort((a, b) => {
+                // Aggregate results by user - keep only the best score for each user
+                const userBestScores = {};
+                results.forEach(result => {
+                    if (!userBestScores[result.userId] || result.score > userBestScores[result.userId].score) {
+                        userBestScores[result.userId] = result;
+                    }
+                });
+
+                // Convert back to array and sort by best score (descending)
+                const aggregatedResults = Object.values(userBestScores).sort((a, b) => {
                     if (b.score !== a.score) {
                         return b.score - a.score;
                     }
@@ -1131,7 +1424,7 @@
                 });
 
                 // Fetch user names for display
-                const userPromises = results.map(async (result) => {
+                const userPromises = aggregatedResults.map(async (result) => {
                     const userDocRef = doc(db, 'artifacts', appId, 'users', result.userId);
                     const userDocSnap = await getDoc(userDocRef);
                     return {
@@ -1159,6 +1452,54 @@
             } finally {
                 hideLoading();
                 showSection(leaderboardSection);
+            }
+        }
+
+        async function loadPostsByCategory(categoryTitle) {
+            showLoading();
+            postsContainer.innerHTML = '';
+            noPostsFoundMessage.classList.add('hidden');
+            try {
+                const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
+                const q = query(postsColRef, where('category', '==', categoryTitle), orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noPostsFoundMessage.classList.remove('hidden');
+                    showMessage(`No posts found in ${categoryTitle} category.`);
+                    hideLoading();
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const postData = doc.data();
+                    const postCard = document.createElement('div');
+                    postCard.className = 'card p-6';
+                    postCard.innerHTML = `
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${postData.title}</h3>
+                        <p class="text-gray-600 mb-2">${postData.description}</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm text-gray-500">${postData.category || 'Uncategorized'}</span>
+                            <span class="text-sm text-gray-500">${postData.createdAt ? postData.createdAt.toDate().toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                        ${postData.links && postData.links.length > 0 ? `
+                            <div class="space-y-2">
+                                ${postData.links.map(link => `
+                                    <a href="${link}" target="_blank" class="block text-blue-600 hover:text-blue-800 text-sm">
+                                        <i class="fas fa-external-link-alt mr-1"></i>${link.includes('youtube.com') ? 'Watch Video' : 'View Resource'}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    `;
+                    postsContainer.appendChild(postCard);
+                });
+
+            } catch (error) {
+                console.error('Error loading posts by category:', error);
+                showMessage('Failed to load posts for this category. Please try again.');
+            } finally {
+                hideLoading();
             }
         }
 
