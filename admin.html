@@ -324,6 +324,8 @@
                 <button id="showManageCategoriesBtn" class="tab-button">Manage Categories</button>
                 <button id="showCreateTestBtn" class="tab-button">Create Test</button>
                 <button id="showManageTestsBtn" class="tab-button">Manage Tests</button>
+                <button id="showCreatePostBtn" class="tab-button">Create Post</button>
+                <button id="showManagePostsBtn" class="tab-button">Manage Posts</button>
                 <button id="showManageUsersBtn" class="tab-button">Manage Users</button>
                 <button id="migrateDataBtn" class="tab-button" style="background-color: #f59e0b; color: white;">Migrate Data</button>
             </div>
@@ -439,6 +441,63 @@
                 </div>
             </div>
 
+            <!-- Create Post Section -->
+            <div id="createPostSection" class="admin-tab-content w-full max-w-3xl hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Create New Study Post</h2>
+                <form id="createPostForm" class="space-y-4">
+                    <div>
+                        <label for="postTitle" class="block text-sm font-medium text-gray-700 mb-1">Post Title</label>
+                        <input type="text" id="postTitle" class="form-input" placeholder="e.g., Introduction to JavaScript" required>
+                    </div>
+                    <div>
+                        <label for="postCategory" class="block text-sm font-medium text-gray-700 mb-1">Select Category</label>
+                        <select id="postCategory" class="form-input" required>
+                            <option value="">-- Select a Category --</option>
+                            <!-- Post categories will be loaded here dynamically -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="postDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="postDescription" class="form-input" rows="4" placeholder="Enter a detailed description of the study material..." required></textarea>
+                    </div>
+                    <div>
+                        <label for="postLinks" class="block text-sm font-medium text-gray-700 mb-1">Study Links (one per line)</label>
+                        <textarea id="postLinks" class="form-input" rows="3" placeholder="https://www.youtube.com/watch?v=example&#10;https://example.com/resource&#10;https://docs.example.com"></textarea>
+                        <p class="text-sm text-gray-500 mt-1">Add YouTube links, documentation, or any other study resources. One link per line.</p>
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Create Post</button>
+                </form>
+            </div>
+
+            <!-- Manage Posts Section -->
+            <div id="managePostsSection" class="admin-tab-content w-full max-w-4xl hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Manage Study Posts</h2>
+                <div class="mb-4">
+                    <label for="filterPostCategory" class="block text-sm font-medium text-gray-700 mb-1">Filter by Category</label>
+                    <select id="filterPostCategory" class="form-input w-full md:w-1/2">
+                        <option value="">All Categories</option>
+                        <!-- Post categories will be loaded here dynamically -->
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Post Title</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Links</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="postsTableBody">
+                            <!-- Posts will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Manage Users Section -->
             <div id="manageUsersSection" class="admin-tab-content w-full max-w-4xl hidden">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Manage Student Users</h2>
@@ -498,6 +557,40 @@
                 <div id="editQuestionsContainer" class="space-y-4 border p-4 rounded-lg bg-gray-50">
                     <!-- Questions will be loaded here dynamically for editing -->
                 </div>
+
+    <!-- Edit Post Modal -->
+    <div id="editPostModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Edit Study Post</h3>
+            <form id="editPostForm" class="space-y-4">
+                <input type="hidden" id="editPostId">
+                <div>
+                    <label for="editPostTitle" class="block text-sm font-medium text-gray-700 mb-1">Post Title</label>
+                    <input type="text" id="editPostTitle" class="form-input" required>
+                </div>
+                <div>
+                    <label for="editPostCategory" class="block text-sm font-medium text-gray-700 mb-1">Select Category</label>
+                    <select id="editPostCategory" class="form-input" required>
+                        <option value="">-- Select a Category --</option>
+                        <!-- Post categories will be loaded here dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label for="editPostDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="editPostDescription" class="form-input" rows="4" required></textarea>
+                </div>
+                <div>
+                    <label for="editPostLinks" class="block text-sm font-medium text-gray-700 mb-1">Study Links (one per line)</label>
+                    <textarea id="editPostLinks" class="form-input" rows="3"></textarea>
+                    <p class="text-sm text-gray-500 mt-1">Add YouTube links, documentation, or any other study resources. One link per line.</p>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="btn-primary flex-1">Update Post</button>
+                    <button type="button" id="cancelEditPostBtn" class="btn-secondary flex-1">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
                 <button type="button" id="addEditQuestionBtn" class="btn-secondary w-full">Add Another Question</button>
                 <div class="flex justify-end gap-4 mt-6">
                     <button type="button" id="cancelEditTestBtn" class="btn-secondary">Cancel</button>
@@ -553,12 +646,16 @@
         const showManageCategoriesBtn = document.getElementById('showManageCategoriesBtn');
         const showCreateTestBtn = document.getElementById('showCreateTestBtn');
         const showManageTestsBtn = document.getElementById('showManageTestsBtn');
+        const showCreatePostBtn = document.getElementById('showCreatePostBtn');
+        const showManagePostsBtn = document.getElementById('showManagePostsBtn');
         const showManageUsersBtn = document.getElementById('showManageUsersBtn'); // New button
 
         const createCategorySection = document.getElementById('createCategorySection');
         const manageCategoriesSection = document.getElementById('manageCategoriesSection');
         const createTestSection = document.getElementById('createTestSection');
         const manageTestsSection = document.getElementById('manageTestsSection');
+        const createPostSection = document.getElementById('createPostSection');
+        const managePostsSection = document.getElementById('managePostsSection');
         const manageUsersSection = document.getElementById('manageUsersSection'); // New section
 
         // Create Category Form
@@ -580,6 +677,17 @@
         // Manage Tests Section
         const filterTestCategorySelect = document.getElementById('filterTestCategory');
         const testsTableBody = document.getElementById('testsTableBody');
+
+        // Create Post Form
+        const createPostForm = document.getElementById('createPostForm');
+        const postTitleInput = document.getElementById('postTitle');
+        const postCategorySelect = document.getElementById('postCategory');
+        const postDescriptionInput = document.getElementById('postDescription');
+        const postLinksInput = document.getElementById('postLinks');
+
+        // Manage Posts Section
+        const filterPostCategorySelect = document.getElementById('filterPostCategory');
+        const postsTableBody = document.getElementById('postsTableBody');
 
         // Manage Users Section
         const usersTableBody = document.getElementById('usersTableBody');
@@ -603,6 +711,16 @@
         const addEditQuestionBtn = document.getElementById('addEditQuestionBtn');
         const cancelEditTestBtn = document.getElementById('cancelEditTestBtn');
         let editQuestionCounter = 0; // To track questions in edit modal
+
+        // Edit Post Modal Elements
+        const editPostModal = document.getElementById('editPostModal');
+        const editPostForm = document.getElementById('editPostForm');
+        const editPostIdInput = document.getElementById('editPostId');
+        const editPostTitleInput = document.getElementById('editPostTitle');
+        const editPostCategorySelect = document.getElementById('editPostCategory');
+        const editPostDescriptionInput = document.getElementById('editPostDescription');
+        const editPostLinksInput = document.getElementById('editPostLinks');
+        const cancelEditPostBtn = document.getElementById('cancelEditPostBtn');
 
         /**
          * Shows the loading overlay.
@@ -722,6 +840,8 @@
             else if (tabId === 'manageCategoriesSection') showManageCategoriesBtn.classList.add('active');
             else if (tabId === 'createTestSection') showCreateTestBtn.classList.add('active');
             else if (tabId === 'manageTestsSection') showManageTestsBtn.classList.add('active');
+            else if (tabId === 'createPostSection') showCreatePostBtn.classList.add('active');
+            else if (tabId === 'managePostsSection') showManagePostsBtn.classList.add('active');
             else if (tabId === 'manageUsersSection') showManageUsersBtn.classList.add('active');
         }
 
@@ -730,6 +850,8 @@
         showManageCategoriesBtn.addEventListener('click', () => switchAdminTab('manageCategoriesSection'));
         showCreateTestBtn.addEventListener('click', () => switchAdminTab('createTestSection'));
         showManageTestsBtn.addEventListener('click', () => switchAdminTab('manageTestsSection'));
+        showCreatePostBtn.addEventListener('click', () => switchAdminTab('createPostSection'));
+        showManagePostsBtn.addEventListener('click', () => switchAdminTab('managePostsSection'));
         showManageUsersBtn.addEventListener('click', () => switchAdminTab('manageUsersSection'));
         migrateDataBtn.addEventListener('click', migrateOldTestData);
 
@@ -747,6 +869,7 @@
                 renderCategoriesTable();
                 populateCategoryDropdowns();
                 populateEditTestCategoryDropdown(); // Also update edit modal dropdown
+                populateEditPostCategoryDropdown(); // Also update edit post modal dropdown
             }, (error) => {
                 console.error("Error listening to categories:", error);
                 showCustomModal("Error", "Failed to load categories.");
@@ -776,6 +899,19 @@
             }, (error) => {
                 console.error("Error listening to students:", error);
                 showCustomModal("Error", "Failed to load student data.");
+            });
+
+            // Listen for posts changes
+            const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
+            onSnapshot(postsCollectionRef, (snapshot) => {
+                const posts = [];
+                snapshot.forEach(doc => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                renderPostsTable(posts);
+            }, (error) => {
+                console.error("Error listening to posts:", error);
+                showCustomModal("Error", "Failed to load posts.");
             });
         }
 
@@ -867,10 +1003,10 @@
          * Populates the category dropdowns in create test and filter sections.
          */
         function populateCategoryDropdowns() {
-            const dropdowns = [testCategorySelect, filterTestCategorySelect];
+            const dropdowns = [testCategorySelect, filterTestCategorySelect, postCategorySelect, filterPostCategorySelect];
             dropdowns.forEach(dropdown => {
-                let defaultOptionValue = dropdown.id === 'testCategory' ? '' : '';
-                let defaultOptionText = dropdown.id === 'testCategory' ? '-- Select a Category --' : 'All Categories';
+                let defaultOptionValue = dropdown.id === 'testCategory' || dropdown.id === 'postCategory' ? '' : '';
+                let defaultOptionText = dropdown.id === 'testCategory' || dropdown.id === 'postCategory' ? '-- Select a Category --' : 'All Categories';
                 dropdown.innerHTML = `<option value="${defaultOptionValue}">${defaultOptionText}</option>`;
 
                 categories.forEach(category => {
@@ -892,6 +1028,19 @@
                 option.value = category.id;
                 option.textContent = category.title;
                 editTestCategorySelect.appendChild(option);
+            });
+        }
+
+        /**
+         * Populates the category dropdown in the edit post modal.
+         */
+        function populateEditPostCategoryDropdown() {
+            editPostCategorySelect.innerHTML = `<option value="">-- Select a Category --</option>`;
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.title;
+                editPostCategorySelect.appendChild(option);
             });
         }
 
@@ -1108,6 +1257,47 @@
         });
 
         /**
+         * Handles creation of a new study post.
+         */
+        createPostForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            const postTitle = postTitleInput.value.trim();
+            const postCategoryId = postCategorySelect.value;
+            const postCategoryName = postCategorySelect.options[postCategorySelect.selectedIndex].textContent;
+            const postDescription = postDescriptionInput.value.trim();
+            const postLinksText = postLinksInput.value.trim();
+
+            if (!postTitle || !postCategoryId || !postDescription) {
+                showCustomModal("Input Error", "Please fill in post title, category, and description.");
+                hideLoading();
+                return;
+            }
+
+            // Parse links from textarea (one per line)
+            const links = postLinksText ? postLinksText.split('\n').map(link => link.trim()).filter(link => link) : [];
+
+            try {
+                const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
+                await addDoc(postsCollectionRef, {
+                    title: postTitle,
+                    category: postCategoryName, // Use category name for student compatibility
+                    description: postDescription,
+                    links: links,
+                    createdAt: new Date()
+                });
+                showCustomModal("Success", `Post "${postTitle}" created successfully!`);
+                createPostForm.reset();
+            } catch (error) {
+                console.error("Error creating post:", error);
+                showCustomModal("Error", "Failed to create post.");
+            } finally {
+                hideLoading();
+            }
+        });
+
+        /**
          * Renders tests in the manage tests table based on the selected filter.
          * @param {Array} testsToRender - Tests to display (can be allTests or filteredTests).
          */
@@ -1191,6 +1381,62 @@
         });
 
         /**
+         * Renders posts in the manage posts table based on the selected filter.
+         * @param {Array} postsToRender - Posts to display.
+         */
+        function renderPostsTable(postsToRender) {
+            postsTableBody.innerHTML = '';
+            const filterCategory = filterPostCategorySelect.value;
+            const filteredPosts = filterCategory ? postsToRender.filter(post => post.category === filterCategory) : postsToRender;
+
+            if (filteredPosts.length === 0) {
+                postsTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500">No posts found for the selected category.</td></tr>';
+                return;
+            }
+
+            filteredPosts.forEach(post => {
+                const row = document.createElement('tr');
+                const linksText = post.links && post.links.length > 0 ? post.links.join(', ') : 'No links';
+                const createdAt = post.createdAt ? post.createdAt.toDate().toLocaleDateString() : 'N/A';
+                
+                row.innerHTML = `
+                    <td>${post.title}</td>
+                    <td>${post.category || 'Uncategorized'}</td>
+                    <td>${post.description.substring(0, 100)}${post.description.length > 100 ? '...' : ''}</td>
+                    <td>${linksText}</td>
+                    <td>${createdAt}</td>
+                    <td>
+                        <button class="btn-edit edit-post-btn" data-id="${post.id}">Edit</button>
+                        <button class="btn-danger delete-post-btn ml-2" data-id="${post.id}">Delete</button>
+                    </td>
+                `;
+                postsTableBody.appendChild(row);
+            });
+
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-post-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const postId = e.target.dataset.id;
+                    openEditPostModal(postId);
+                });
+            });
+
+            document.querySelectorAll('.delete-post-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const postId = e.target.dataset.id;
+                    deletePost(postId);
+                });
+            });
+        }
+
+        // Event listener for post category filter
+        filterPostCategorySelect.addEventListener('change', () => {
+            // Re-render posts table when filter changes
+            const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
+            // This will trigger the onSnapshot listener which calls renderPostsTable
+        });
+
+        /**
          * Opens the edit test modal and populates it with test data.
          * @param {string} testId - The ID of the test to edit.
          */
@@ -1258,6 +1504,112 @@
          * Handles saving changes to an MCQ test.
          */
         editTestForm.addEventListener('submit', async (e) => {
+
+        /**
+         * Opens the edit post modal and populates it with post data.
+         * @param {string} postId - The ID of the post to edit.
+         */
+        async function openEditPostModal(postId) {
+            showLoading();
+            try {
+                const postDocRef = doc(db, `artifacts/${appId}/public/data/posts`, postId);
+                const postDocSnap = await getDoc(postDocRef);
+
+                if (postDocSnap.exists()) {
+                    const postData = postDocSnap.data();
+                    editPostIdInput.value = postId;
+                    editPostTitleInput.value = postData.title;
+                    
+                    // Find the category ID based on the category name
+                    const categoryObj = categories.find(cat => cat.title === postData.category);
+                    editPostCategorySelect.value = categoryObj ? categoryObj.id : '';
+                    
+                    editPostDescriptionInput.value = postData.description;
+                    editPostLinksInput.value = postData.links ? postData.links.join('\n') : '';
+
+                    editPostModal.classList.remove('hidden');
+                } else {
+                    showCustomModal("Error", "Post not found for editing.");
+                }
+            } catch (error) {
+                console.error("Error opening edit post modal:", error);
+                showCustomModal("Error", "Failed to load post data for editing.");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * Handles saving changes to a study post.
+         */
+        editPostForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            const postId = editPostIdInput.value;
+            const postTitle = editPostTitleInput.value.trim();
+            const postCategoryId = editPostCategorySelect.value;
+            const postCategoryName = editPostCategorySelect.options[editPostCategorySelect.selectedIndex].textContent;
+            const postDescription = editPostDescriptionInput.value.trim();
+            const postLinksText = editPostLinksInput.value.trim();
+
+            if (!postTitle || !postCategoryId || !postDescription) {
+                showCustomModal("Input Error", "Please fill in post title, category, and description.");
+                hideLoading();
+                return;
+            }
+
+            // Parse links from textarea (one per line)
+            const links = postLinksText ? postLinksText.split('\n').map(link => link.trim()).filter(link => link) : [];
+
+            try {
+                const postDocRef = doc(db, `artifacts/${appId}/public/data/posts`, postId);
+                await updateDoc(postDocRef, {
+                    title: postTitle,
+                    category: postCategoryName, // Use category name for student compatibility
+                    description: postDescription,
+                    links: links,
+                    updatedAt: new Date()
+                });
+                showCustomModal("Success", `Post "${postTitle}" updated successfully!`);
+                editPostModal.classList.add('hidden');
+            } catch (error) {
+                console.error("Error updating post:", error);
+                showCustomModal("Error", "Failed to update post.");
+            } finally {
+                hideLoading();
+            }
+        });
+
+        /**
+         * Handles deletion of a study post.
+         * @param {string} postId - The ID of the post to delete.
+         */
+        async function deletePost(postId) {
+            const confirmed = await showCustomModal(
+                "Confirm Deletion", 
+                "Are you sure you want to delete this post? This action cannot be undone.", 
+                true
+            );
+            if (!confirmed) return;
+
+            showLoading();
+            try {
+                const postDocRef = doc(db, `artifacts/${appId}/public/data/posts`, postId);
+                await deleteDoc(postDocRef);
+                showCustomModal("Success", "Post deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting post:", error);
+                showCustomModal("Error", "Failed to delete post.");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Event listeners for edit post modal
+        cancelEditPostBtn.addEventListener('click', () => {
+            editPostModal.classList.add('hidden');
+        });
             e.preventDefault();
             showLoading();
 
