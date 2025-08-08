@@ -339,10 +339,10 @@
                         <input type="text" id="categoryName" class="form-input" placeholder="e.g., Science, History" required>
                     </div>
                     <div>
-                        <label for="categoryPage" class="block text-sm font-medium text-gray-700 mb-1">Assign to Page</label>
-                        <select id="categoryPage" class="form-input" required>
-                            <option value="home">Home</option>
-                            <option value="tests">Tests</option>
+                        <label for="categoryType" class="block text-sm font-medium text-gray-700 mb-1">Category Type</label>
+                        <select id="categoryType" class="form-input" required>
+                            <option value="test">Test Category</option>
+                            <option value="post">Post Category</option>
                         </select>
                     </div>
                     <button type="submit" class="btn-primary w-full">Add Category</button>
@@ -352,17 +352,31 @@
             <!-- Manage Categories Section -->
             <div id="manageCategoriesSection" class="admin-tab-content w-full max-w-4xl hidden">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Manage Categories</h2>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Test Categories</h3>
+                <div class="table-container mb-8">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody">
+                            <!-- Test categories will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Post Categories</h3>
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Category Name</th>
-                                <th>Assigned Page</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="categoriesTableBody">
-                            <!-- Categories will be loaded here -->
+                        <tbody id="postCategoriesTableBody">
+                            <!-- Post categories will be loaded here -->
                         </tbody>
                     </table>
                 </div>
@@ -609,6 +623,7 @@
             addDoc,
             doc,
             getDoc,
+            getDocs,
             setDoc,
             updateDoc,
             deleteDoc,
@@ -619,8 +634,10 @@
         let app;
         let db;
         let currentUserId = 'admin_session_' + Math.random().toString(36).substring(2, 15); // Unique ID for current session
-        let categories = []; // To store categories for dropdowns and display
+        let testCategories = []; // Test categories
+        let postCategories = []; // Post categories
         let allTests = []; // To store all tests for filtering and editing
+        let allPosts = []; // To store all posts for filtering and editing
 
         // Global variables for Canvas environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -661,7 +678,7 @@
         // Create Category Form
         const createCategoryForm = document.getElementById('createCategoryForm');
         const categoryNameInput = document.getElementById('categoryName');
-        const categoryPageSelect = document.getElementById('categoryPage');
+        const categoryTypeSelect = document.getElementById('categoryType');
 
         // Manage Categories Table
         const categoriesTableBody = document.getElementById('categoriesTableBody');
@@ -859,20 +876,34 @@
          * Sets up real-time listeners for Firestore collections.
          */
         function setupFirestoreListeners() {
-            // Listen for categories changes
-            const categoriesCollectionRef = collection(db, `artifacts/${appId}/public/data/categories`);
-            onSnapshot(categoriesCollectionRef, (snapshot) => {
-                categories = [];
+            // Listen for test categories changes
+            const testCategoriesCollectionRef = collection(db, `artifacts/${appId}/public/data/categories`);
+            onSnapshot(testCategoriesCollectionRef, (snapshot) => {
+                testCategories = [];
                 snapshot.forEach(doc => {
-                    categories.push({ id: doc.id, ...doc.data() });
+                    testCategories.push({ id: doc.id, ...doc.data() });
                 });
-                renderCategoriesTable();
+                renderTestCategoriesTable();
                 populateCategoryDropdowns();
                 populateEditTestCategoryDropdown(); // Also update edit modal dropdown
+            }, (error) => {
+                console.error("Error listening to test categories:", error);
+                showCustomModal("Error", "Failed to load test categories.");
+            });
+
+            // Listen for post categories changes
+            const postCategoriesCollectionRef = collection(db, `artifacts/${appId}/public/data/postCategories`);
+            onSnapshot(postCategoriesCollectionRef, (snapshot) => {
+                postCategories = [];
+                snapshot.forEach(doc => {
+                    postCategories.push({ id: doc.id, ...doc.data() });
+                });
+                renderPostCategoriesTable();
+                populateCategoryDropdowns();
                 populateEditPostCategoryDropdown(); // Also update edit post modal dropdown
             }, (error) => {
-                console.error("Error listening to categories:", error);
-                showCustomModal("Error", "Failed to load categories.");
+                console.error("Error listening to post categories:", error);
+                showCustomModal("Error", "Failed to load post categories.");
             });
 
             // Listen for tests changes
@@ -904,11 +935,11 @@
             // Listen for posts changes
             const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
             onSnapshot(postsCollectionRef, (snapshot) => {
-                const posts = [];
+                allPosts = [];
                 snapshot.forEach(doc => {
-                    posts.push({ id: doc.id, ...doc.data() });
+                    allPosts.push({ id: doc.id, ...doc.data() });
                 });
-                renderPostsTable(posts);
+                renderPostsTable(allPosts);
             }, (error) => {
                 console.error("Error listening to posts:", error);
                 showCustomModal("Error", "Failed to load posts.");
@@ -922,7 +953,7 @@
             e.preventDefault();
             showLoading();
             const categoryName = categoryNameInput.value.trim();
-            const categoryPage = categoryPageSelect.value;
+            const categoryType = categoryTypeSelect.value;
 
             if (!categoryName) {
                 showCustomModal("Input Error", "Category name cannot be empty.");
@@ -931,12 +962,9 @@
             }
 
             try {
-                const categoriesCollectionRef = collection(db, `artifacts/${appId}/public/data/categories`);
-                await addDoc(categoriesCollectionRef, {
-                    title: categoryName,
-                    page: categoryPage,
-                    createdAt: new Date()
-                });
+                const collectionPath = categoryType === 'post' ? `artifacts/${appId}/public/data/postCategories` : `artifacts/${appId}/public/data/categories`;
+                const categoriesCollectionRef = collection(db, collectionPath);
+                await addDoc(categoriesCollectionRef, { title: categoryName, createdAt: new Date() });
                 showCustomModal("Success", `Category "${categoryName}" added successfully!`);
                 createCategoryForm.reset();
             } catch (error) {
@@ -950,32 +978,60 @@
         /**
          * Renders the categories in the manage categories table.
          */
-        function renderCategoriesTable() {
+        function renderTestCategoriesTable() {
             categoriesTableBody.innerHTML = '';
-            if (categories.length === 0) {
-                categoriesTableBody.innerHTML = '<tr><td colspan="3" class="text-center text-gray-500">No categories found.</td></tr>';
+            if (testCategories.length === 0) {
+                categoriesTableBody.innerHTML = '<tr><td colspan="2" class="text-center text-gray-500">No test categories found.</td></tr>';
                 return;
             }
-            categories.forEach(category => {
+            testCategories.forEach(category => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${category.title}</td>
-                    <td>${category.page}</td>
                     <td>
-                        <button class="btn-danger delete-category-btn" data-id="${category.id}">Delete</button>
+                        <button class="btn-danger delete-test-category-btn" data-id="${category.id}">Delete</button>
                     </td>
                 `;
                 categoriesTableBody.appendChild(row);
             });
 
-            // Add event listeners for delete buttons
-            document.querySelectorAll('.delete-category-btn').forEach(button => {
+            document.querySelectorAll('.delete-test-category-btn').forEach(button => {
                 button.addEventListener('click', async (e) => {
                     const categoryId = e.target.dataset.id;
                     const categoryTitle = e.target.closest('tr').querySelector('td:first-child').textContent;
-                    const confirmDelete = await showCustomModal("Confirm Delete", `Are you sure you want to delete category "${categoryTitle}"? This cannot be undone.`, true);
+                    const confirmDelete = await showCustomModal("Confirm Delete", `Delete test category "${categoryTitle}"? This cannot be undone.`, true);
                     if (confirmDelete) {
-                        await deleteCategory(categoryId);
+                        await deleteTestCategory(categoryId);
+                    }
+                });
+            });
+        }
+
+        function renderPostCategoriesTable() {
+            const postCategoriesTableBody = document.getElementById('postCategoriesTableBody');
+            postCategoriesTableBody.innerHTML = '';
+            if (postCategories.length === 0) {
+                postCategoriesTableBody.innerHTML = '<tr><td colspan="2" class="text-center text-gray-500">No post categories found.</td></tr>';
+                return;
+            }
+            postCategories.forEach(category => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${category.title}</td>
+                    <td>
+                        <button class="btn-danger delete-post-category-btn" data-id="${category.id}">Delete</button>
+                    </td>
+                `;
+                postCategoriesTableBody.appendChild(row);
+            });
+
+            document.querySelectorAll('.delete-post-category-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const categoryId = e.target.dataset.id;
+                    const categoryTitle = e.target.closest('tr').querySelector('td:first-child').textContent;
+                    const confirmDelete = await showCustomModal("Confirm Delete", `Delete post category "${categoryTitle}"? This cannot be undone.`, true);
+                    if (confirmDelete) {
+                        await deletePostCategory(categoryId);
                     }
                 });
             });
@@ -985,15 +1041,29 @@
          * Deletes a category from Firestore.
          * @param {string} categoryId - The ID of the category to delete.
          */
-        async function deleteCategory(categoryId) {
+        async function deleteTestCategory(categoryId) {
             showLoading();
             try {
                 const categoryDocRef = doc(db, `artifacts/${appId}/public/data/categories`, categoryId);
                 await deleteDoc(categoryDocRef);
-                showCustomModal("Success", "Category deleted successfully!");
+                showCustomModal("Success", "Test category deleted successfully!");
             } catch (error) {
                 console.error("Error deleting category:", error);
-                showCustomModal("Error", "Failed to delete category.");
+                showCustomModal("Error", "Failed to delete test category.");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function deletePostCategory(categoryId) {
+            showLoading();
+            try {
+                const categoryDocRef = doc(db, `artifacts/${appId}/public/data/postCategories`, categoryId);
+                await deleteDoc(categoryDocRef);
+                showCustomModal("Success", "Post category deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting post category:", error);
+                showCustomModal("Error", "Failed to delete post category.");
             } finally {
                 hideLoading();
             }
@@ -1003,18 +1073,34 @@
          * Populates the category dropdowns in create test and filter sections.
          */
         function populateCategoryDropdowns() {
-            const dropdowns = [testCategorySelect, filterTestCategorySelect, postCategorySelect, filterPostCategorySelect];
-            dropdowns.forEach(dropdown => {
-                let defaultOptionValue = dropdown.id === 'testCategory' || dropdown.id === 'postCategory' ? '' : '';
-                let defaultOptionText = dropdown.id === 'testCategory' || dropdown.id === 'postCategory' ? '-- Select a Category --' : 'All Categories';
-                dropdown.innerHTML = `<option value="${defaultOptionValue}">${defaultOptionText}</option>`;
+            // Test categories dropdowns
+            testCategorySelect.innerHTML = `<option value="">-- Select a Category --</option>`;
+            filterTestCategorySelect.innerHTML = `<option value="">All Categories</option>`;
+            testCategories.forEach(category => {
+                const optCreate = document.createElement('option');
+                optCreate.value = category.id;
+                optCreate.textContent = category.title;
+                testCategorySelect.appendChild(optCreate);
 
-                categories.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category.id;
-                    option.textContent = category.title;
-                    dropdown.appendChild(option);
-                });
+                const optFilter = document.createElement('option');
+                optFilter.value = category.title; // filter by name
+                optFilter.textContent = category.title;
+                filterTestCategorySelect.appendChild(optFilter);
+            });
+
+            // Post categories dropdowns
+            postCategorySelect.innerHTML = `<option value="">-- Select a Category --</option>`;
+            filterPostCategorySelect.innerHTML = `<option value="">All Categories</option>`;
+            postCategories.forEach(category => {
+                const optCreate = document.createElement('option');
+                optCreate.value = category.id;
+                optCreate.textContent = category.title;
+                postCategorySelect.appendChild(optCreate);
+
+                const optFilter = document.createElement('option');
+                optFilter.value = category.title; // filter by name
+                optFilter.textContent = category.title;
+                filterPostCategorySelect.appendChild(optFilter);
             });
         }
 
@@ -1023,7 +1109,7 @@
          */
         function populateEditTestCategoryDropdown() {
             editTestCategorySelect.innerHTML = `<option value="">-- Select a Category --</option>`;
-            categories.forEach(category => {
+            testCategories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.id;
                 option.textContent = category.title;
@@ -1036,7 +1122,7 @@
          */
         function populateEditPostCategoryDropdown() {
             editPostCategorySelect.innerHTML = `<option value="">-- Select a Category --</option>`;
-            categories.forEach(category => {
+            postCategories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.id;
                 option.textContent = category.title;
@@ -1303,15 +1389,10 @@
          */
         function renderTestsTable(testsToRender) {
             testsTableBody.innerHTML = '';
-            const filterCategoryId = filterTestCategorySelect.value;
-            const filteredTests = filterCategoryId ? testsToRender.filter(test => {
-                // Find the category name for the selected category ID
-                const selectedCategory = categories.find(cat => cat.id === filterCategoryId);
-                if (!selectedCategory) return false;
-                
-                // Handle both old and new category formats
+            const filterCategoryName = filterTestCategorySelect.value;
+            const filteredTests = filterCategoryName ? testsToRender.filter(test => {
                 const testCategory = test.category || test.categoryName;
-                return testCategory === selectedCategory.title;
+                return testCategory === filterCategoryName;
             }) : testsToRender;
 
             if (filteredTests.length === 0) {
@@ -1431,9 +1512,7 @@
 
         // Event listener for post category filter
         filterPostCategorySelect.addEventListener('change', () => {
-            // Re-render posts table when filter changes
-            const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
-            // This will trigger the onSnapshot listener which calls renderPostsTable
+            renderPostsTable(allPosts);
         });
 
         /**
@@ -1458,7 +1537,7 @@
                     }
                     
                     // Find the category ID based on the category name
-                    const categoryObj = categories.find(cat => cat.title === categoryName);
+                    const categoryObj = testCategories.find(cat => cat.title === categoryName);
                     editTestCategorySelect.value = categoryObj ? categoryObj.id : '';
 
                     // Clear existing questions and populate with fetched data
@@ -1521,7 +1600,7 @@
                     editPostTitleInput.value = postData.title;
                     
                     // Find the category ID based on the category name
-                    const categoryObj = categories.find(cat => cat.title === postData.category);
+                    const categoryObj = postCategories.find(cat => cat.title === postData.category);
                     editPostCategorySelect.value = categoryObj ? categoryObj.id : '';
                     
                     editPostDescriptionInput.value = postData.description;
