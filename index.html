@@ -91,6 +91,18 @@
         .card:hover {
             transform: translateY(-5px);
         }
+        /* Like button */
+        .like-btn {
+            background-color: #f3f4f6;
+            color: #374151;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .like-btn:hover { background-color: #e5e7eb; }
+        .like-btn .fa-heart { transition: transform 0.2s ease-in-out; }
+        .like-btn:hover .fa-heart { transform: scale(1.1); }
         .category-card, .test-card {
             cursor: pointer;
             border: 1px solid #e2e8f0;
@@ -290,7 +302,8 @@
             <div id="navLinks" class="hidden md:flex items-center space-x-4">
                 <a href="#" id="homeNav" class="nav-link text-gray-700 font-medium">Home</a>
                 <a href="#" id="postsNav" class="nav-link text-gray-700 font-medium">Posts</a>
-                <a href="#" id="categoriesNav" class="nav-link text-gray-700 font-medium">Categories</a>
+                <a href="#" id="testCategoriesNav" class="nav-link text-gray-700 font-medium">Test Categories</a>
+                <a href="#" id="postCategoriesNav" class="nav-link text-gray-700 font-medium">Post Categories</a>
                 <a href="#" id="allTestsNav" class="nav-link text-gray-700 font-medium">All Tests</a>
                 <a href="#" id="logoutNav" class="nav-link text-red-600 font-medium"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
             </div>
@@ -303,7 +316,8 @@
         <div id="mobileNavMenu" class="md:hidden bg-white shadow-md py-2 px-4 hidden">
             <a href="#" id="homeNavMobile" class="block nav-link text-gray-700 font-medium py-2">Home</a>
             <a href="#" id="postsNavMobile" class="block nav-link text-gray-700 font-medium py-2">Posts</a>
-            <a href="#" id="categoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Categories</a>
+            <a href="#" id="testCategoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Test Categories</a>
+            <a href="#" id="postCategoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Post Categories</a>
             <a href="#" id="allTestsNavMobile" class="block nav-link text-gray-700 font-medium py-2">All Tests</a>
             <a href="#" id="logoutNavMobile" class="block nav-link text-red-600 font-medium py-2"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
         </div>
@@ -361,26 +375,14 @@
                 <p id="firstLoginMessage" class="text-sm mt-1 hidden">It's great to have you here. Let's start learning!</p>
             </div>
 
-            <!-- Home Section: Latest Posts and Tests -->
+            <!-- Home Section: Recent Feed and Categories -->
             <div id="homeSection" class="mb-8">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Welcome to Skillyterns</h2>
-                
-                <!-- Latest Posts Section -->
+                <!-- Recent Combined Feed -->
                 <div class="mb-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Latest Study Posts</h3>
-                    <div id="latestPostsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Latest posts will be loaded here dynamically -->
-                    </div>
-                    <p id="noPostsMessage" class="text-gray-600 text-center mt-8 hidden">No posts found. Please check back later!</p>
-                </div>
-
-                <!-- Latest Tests Section -->
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Latest Tests</h3>
-                    <div id="latestTestsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Latest tests will be loaded here dynamically -->
-                    </div>
-                    <p id="noLatestTestsMessage" class="text-gray-600 text-center mt-8 hidden">No tests found. Please check back later!</p>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Recent Posts & Tests</h3>
+                    <div id="recentFeedContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    <p id="noRecentMessage" class="text-gray-600 text-center mt-8 hidden">No recent items found. Please check back later!</p>
                 </div>
 
                 <!-- Test Categories Section -->
@@ -405,27 +407,18 @@
                 <p id="noPostsFoundMessage" class="text-gray-600 text-center mt-8 hidden">No posts found. Try adjusting your search!</p>
             </div>
 
-            <!-- Categories Section -->
-            <div id="categoriesSection" class="hidden mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Categories</h2>
-                
-                <!-- Test Categories -->
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Test Categories</h3>
-                    <div id="testCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Test categories will be loaded here dynamically -->
-                    </div>
-                    <p id="noTestCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No test categories found.</p>
-                </div>
+            <!-- Test Categories Section -->
+            <div id="testCategoriesSection" class="hidden mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Test Categories</h2>
+                <div id="testCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <p id="noTestCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No test categories found.</p>
+            </div>
 
-                <!-- Post Categories -->
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Post Categories</h3>
-                    <div id="postCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Post categories will be loaded here dynamically -->
-                    </div>
-                    <p id="noPostCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No post categories found.</p>
-                </div>
+            <!-- Post Categories Section -->
+            <div id="postCategoriesSection" class="hidden mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Post Categories</h2>
+                <div id="postCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <p id="noPostCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No post categories found.</p>
             </div>
 
             <!-- All Tests Section -->
@@ -543,7 +536,8 @@
             where,
             getDocs,
             serverTimestamp,
-            orderBy
+            orderBy,
+            deleteDoc
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase Configuration (from user prompt)
@@ -593,12 +587,14 @@
         const mobileNavMenu = document.getElementById('mobileNavMenu');
         const homeNav = document.getElementById('homeNav');
         const postsNav = document.getElementById('postsNav');
-        const categoriesNav = document.getElementById('categoriesNav');
+        const testCategoriesNav = document.getElementById('testCategoriesNav');
+        const postCategoriesNav = document.getElementById('postCategoriesNav');
         const allTestsNav = document.getElementById('allTestsNav');
         const logoutNav = document.getElementById('logoutNav');
         const homeNavMobile = document.getElementById('homeNavMobile');
         const postsNavMobile = document.getElementById('postsNavMobile');
-        const categoriesNavMobile = document.getElementById('categoriesNavMobile');
+        const testCategoriesNavMobile = document.getElementById('testCategoriesNavMobile');
+        const postCategoriesNavMobile = document.getElementById('postCategoriesNavMobile');
         const allTestsNavMobile = document.getElementById('allTestsNavMobile');
         const logoutNavMobile = document.getElementById('logoutNavMobile');
 
@@ -607,19 +603,18 @@
         const firstLoginMessage = document.getElementById('firstLoginMessage');
 
         const homeSection = document.getElementById('homeSection');
-        const latestPostsContainer = document.getElementById('latestPostsContainer');
-        const latestTestsContainer = document.getElementById('latestTestsContainer');
+        const recentFeedContainer = document.getElementById('recentFeedContainer');
         const categoriesContainer = document.getElementById('categoriesContainer');
         const noCategoriesMessage = document.getElementById('noCategoriesMessage');
-        const noPostsMessage = document.getElementById('noPostsMessage');
-        const noLatestTestsMessage = document.getElementById('noLatestTestsMessage');
+        const noRecentMessage = document.getElementById('noRecentMessage');
 
         const postsSection = document.getElementById('postsSection');
         const postSearchInput = document.getElementById('postSearchInput');
         const postsContainer = document.getElementById('postsContainer');
         const noPostsFoundMessage = document.getElementById('noPostsFoundMessage');
 
-        const categoriesSection = document.getElementById('categoriesSection');
+        const testCategoriesSection = document.getElementById('testCategoriesSection');
+        const postCategoriesSection = document.getElementById('postCategoriesSection');
         const testCategoriesContainer = document.getElementById('testCategoriesContainer');
         const postCategoriesContainer = document.getElementById('postCategoriesContainer');
         const noTestCategoriesMessage = document.getElementById('noTestCategoriesMessage');
@@ -677,7 +672,8 @@
         function hideAllSections() {
             homeSection.classList.add('hidden');
             postsSection.classList.add('hidden');
-            categoriesSection.classList.add('hidden');
+            testCategoriesSection.classList.add('hidden');
+            postCategoriesSection.classList.add('hidden');
             allTestsSection.classList.add('hidden');
             testPageSection.classList.add('hidden');
             resultsSection.classList.add('hidden');
@@ -822,16 +818,14 @@
         homeNav.addEventListener('click', (e) => {
             e.preventDefault();
             showSection(homeSection);
-            loadLatestPosts();
-            loadLatestTests();
+            loadRecentFeed();
             loadCategories();
             loadPastResults(); // Load past results on home/dashboard
         });
         homeNavMobile.addEventListener('click', (e) => {
             e.preventDefault();
             showSection(homeSection);
-            loadLatestPosts();
-            loadLatestTests();
+            loadRecentFeed();
             loadCategories();
             loadPastResults();
             mobileNavMenu.classList.add('hidden');
@@ -849,16 +843,26 @@
             mobileNavMenu.classList.add('hidden');
         });
 
-        categoriesNav.addEventListener('click', (e) => {
+        testCategoriesNav.addEventListener('click', (e) => {
             e.preventDefault();
-            showSection(categoriesSection);
-            loadCategories();
+            showSection(testCategoriesSection);
+            loadTestCategoriesSection();
+        });
+        testCategoriesNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(testCategoriesSection);
+            loadTestCategoriesSection();
+            mobileNavMenu.classList.add('hidden');
+        });
+
+        postCategoriesNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(postCategoriesSection);
             loadPostCategories();
         });
-        categoriesNavMobile.addEventListener('click', (e) => {
+        postCategoriesNavMobile.addEventListener('click', (e) => {
             e.preventDefault();
-            showSection(categoriesSection);
-            loadCategories();
+            showSection(postCategoriesSection);
             loadPostCategories();
             mobileNavMenu.classList.add('hidden');
         });
@@ -908,6 +912,10 @@
                         <i class="fas fa-folder text-4xl text-blue-500 mb-3"></i>
                         <h3 class="text-xl font-semibold text-gray-800">${category.title}</h3>
                         <p class="text-gray-600 text-sm mt-1">Click to view tests</p>
+                        <div class="mt-3 w-full flex gap-2">
+                            <button class="btn-primary flex-1" onclick="loadTestsByCategory('${category.title}')">View Tests</button>
+                            <button class="like-btn flex-1" onclick="showSection(document.getElementById('testCategoriesSection')); loadTestCategoriesSection();"><i class="far fa-folder-open mr-2"></i>More</button>
+                        </div>
                     `;
                     categoryCard.addEventListener('click', () => loadTestsByCategory(category.title));
                     categoriesContainer.appendChild(categoryCard);
@@ -920,92 +928,126 @@
             }
         }
 
-        async function loadLatestPosts() {
+        async function loadRecentFeed() {
             showLoading();
-            latestPostsContainer.innerHTML = '';
-            noPostsMessage.classList.add('hidden');
+            recentFeedContainer.innerHTML = '';
+            noRecentMessage.classList.add('hidden');
             try {
                 const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
-                const q = query(postsColRef, orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
+                const testsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'tests');
+                const postsSnap = await getDocs(query(postsColRef, orderBy('createdAt', 'desc')));
+                const testsSnap = await getDocs(query(testsColRef, orderBy('createdAt', 'desc')));
 
-                if (querySnapshot.empty) {
-                    noPostsMessage.classList.remove('hidden');
+                const items = [];
+                postsSnap.forEach(d => {
+                    const data = d.data();
+                    items.push({
+                        id: d.id,
+                        type: 'post',
+                        createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
+                        data
+                    });
+                });
+                testsSnap.forEach(d => {
+                    const data = d.data();
+                    items.push({
+                        id: d.id,
+                        type: 'test',
+                        createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
+                        data
+                    });
+                });
+
+                if (items.length === 0) {
+                    noRecentMessage.classList.remove('hidden');
                     hideLoading();
                     return;
                 }
 
-                let count = 0;
-                querySnapshot.forEach(doc => {
-                    if (count >= 6) return; // Show only latest 6 posts
-                    const postData = doc.data();
-                    const postCard = document.createElement('div');
-                    postCard.className = 'card p-6';
-                    postCard.innerHTML = `
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${postData.title}</h3>
-                        <p class="text-gray-600 mb-2 text-sm">${postData.description.substring(0, 100)}${postData.description.length > 100 ? '...' : ''}</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">${postData.category || 'Uncategorized'}</span>
-                            <span class="text-sm text-gray-500">${postData.createdAt ? postData.createdAt.toDate().toLocaleDateString() : 'N/A'}</span>
-                        </div>
-                        ${postData.links && postData.links.length > 0 ? `
-                            <div class="mt-3">
-                                <a href="${postData.links[0]}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
-                                    <i class="fas fa-external-link-alt mr-1"></i>View Resource
-                                </a>
+                // Sort by createdAt desc
+                items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+                // Render up to 12 most recent alternating naturally by sort
+                items.slice(0, 12).forEach(item => {
+                    if (item.type === 'post') {
+                        const postCard = document.createElement('div');
+                        postCard.className = 'card p-6';
+                        const desc = item.data.description || '';
+                        postCard.innerHTML = `
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="text-xl font-bold text-gray-800">${item.data.title}</h3>
+                                <span class="text-xs px-2 py-1 bg-indigo-50 text-indigo-600 rounded">Post</span>
                             </div>
-                        ` : ''}
-                    `;
-                    latestPostsContainer.appendChild(postCard);
-                    count++;
+                            <p class="text-gray-600 mb-3 text-sm">${desc.substring(0, 120)}${desc.length > 120 ? '...' : ''}</p>
+                            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                                <span>${item.data.category || 'Uncategorized'}</span>
+                                <span>${item.createdAt.toLocaleDateString()}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="like-btn" data-type="post" data-id="${item.id}"><i class="far fa-heart mr-2"></i>Like</button>
+                                ${item.data.links && item.data.links.length > 0 ? `<a href="${item.data.links[0]}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm"><i class="fas fa-external-link-alt mr-1"></i>Open</a>` : ''}
+                            </div>
+                        `;
+                        recentFeedContainer.appendChild(postCard);
+                    } else {
+                        const testCard = document.createElement('div');
+                        testCard.className = 'card p-6';
+                        const qCount = item.data.questions ? item.data.questions.length : 0;
+                        testCard.innerHTML = `
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="text-xl font-bold text-gray-800">${item.data.title}</h3>
+                                <span class="text-xs px-2 py-1 bg-emerald-50 text-emerald-600 rounded">Test</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-500 mb-1">
+                                <span>${item.data.category || 'Uncategorized'}</span>
+                                <span>${item.createdAt.toLocaleDateString()}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">${qCount} questions</p>
+                            <div class="flex items-center gap-2">
+                                <button class="like-btn" data-type="test" data-id="${item.id}"><i class="far fa-heart mr-2"></i>Like</button>
+                                <button class="btn-primary flex-1" onclick="startTest('${item.id}', '${item.data.title.replace(/'/g, "&#39;")}')">Start Test</button>
+                            </div>
+                        `;
+                        recentFeedContainer.appendChild(testCard);
+                    }
+                });
+
+                // Bind like buttons
+                recentFeedContainer.querySelectorAll('.like-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const el = e.currentTarget;
+                        const itemType = el.getAttribute('data-type');
+                        const itemId = el.getAttribute('data-id');
+                        await toggleLike(itemType, itemId, el);
+                    });
                 });
 
             } catch (error) {
-                console.error('Error loading latest posts:', error);
-                showMessage('Failed to load latest posts. Please try again.');
+                console.error('Error loading recent feed:', error);
+                showMessage('Failed to load recent items.');
             } finally {
                 hideLoading();
             }
         }
 
-        async function loadLatestTests() {
-            showLoading();
-            latestTestsContainer.innerHTML = '';
-            noLatestTestsMessage.classList.add('hidden');
+        async function toggleLike(itemType, itemId, buttonEl) {
+            if (!currentUser) {
+                showMessage('Please login to like items.');
+                return;
+            }
             try {
-                const testsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'tests');
-                const q = query(testsColRef, orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
-
-                if (querySnapshot.empty) {
-                    noLatestTestsMessage.classList.remove('hidden');
-                    hideLoading();
-                    return;
+                const likeDocRef = doc(db, 'artifacts', appId, 'public', 'data', itemType === 'post' ? 'posts' : 'tests', itemId, 'likes', currentUser.uid);
+                const likeSnap = await getDoc(likeDocRef);
+                if (likeSnap.exists()) {
+                    await deleteDoc(likeDocRef);
+                    buttonEl.innerHTML = '<i class="far fa-heart mr-2"></i>Like';
+                } else {
+                    await setDoc(likeDocRef, { userId: currentUser.uid, likedAt: new Date() });
+                    buttonEl.innerHTML = '<i class="fas fa-heart text-rose-500 mr-2"></i>Liked';
                 }
-
-                let count = 0;
-                querySnapshot.forEach(doc => {
-                    if (count >= 6) return; // Show only latest 6 tests
-                    const testData = doc.data();
-                    const testCard = document.createElement('div');
-                    testCard.className = 'card test-card p-6';
-                    testCard.innerHTML = `
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${testData.title}</h3>
-                        <p class="text-gray-600 mb-2">${testData.category || 'Uncategorized'}</p>
-                        <p class="text-sm text-gray-500 mb-4">${testData.questions ? testData.questions.length : 0} questions</p>
-                        <button class="btn-primary w-full" onclick="startTest('${doc.id}', '${testData.title}')">
-                            Start Test
-                        </button>
-                    `;
-                    latestTestsContainer.appendChild(testCard);
-                    count++;
-                });
-
-            } catch (error) {
-                console.error('Error loading latest tests:', error);
-                showMessage('Failed to load latest tests. Please try again.');
-            } finally {
-                hideLoading();
+            } catch (err) {
+                console.error('Error toggling like:', err);
+                showMessage('Could not update like.');
             }
         }
 
@@ -1087,6 +1129,39 @@
             } catch (error) {
                 console.error('Error loading post categories:', error);
                 showMessage('Failed to load post categories. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadTestCategoriesSection() {
+            showLoading();
+            testCategoriesContainer.innerHTML = '';
+            noTestCategoriesMessage.classList.add('hidden');
+            try {
+                const categoriesColRef = collection(db, 'artifacts', appId, 'public', 'data', 'categories');
+                const q = query(categoriesColRef);
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    noTestCategoriesMessage.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+                querySnapshot.forEach(doc => {
+                    const category = { id: doc.id, ...doc.data() };
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'card category-card p-4 rounded-lg shadow-md flex flex-col items-center justify-center text-center transform hover:scale-105 transition-transform duration-200';
+                    categoryCard.innerHTML = `
+                        <i class="fas fa-folder text-4xl text-blue-500 mb-3"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">${category.title}</h3>
+                        <p class="text-gray-600 text-sm mt-1">Click to view tests</p>
+                    `;
+                    categoryCard.addEventListener('click', () => loadTestsByCategory(category.title));
+                    testCategoriesContainer.appendChild(categoryCard);
+                });
+            } catch (error) {
+                console.error('Error loading test categories section:', error);
+                showMessage('Failed to load test categories.');
             } finally {
                 hideLoading();
             }
