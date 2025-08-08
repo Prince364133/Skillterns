@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Test Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .auth-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            max-width: 450px;
+            margin: 2rem auto;
+        }
+        .form-toggle-btn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-toggle-btn.active {
+            background-color: #4c51bf;
+            color: #ffffff;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease-in-out;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4c51bf;
+            box-shadow: 0 0 0 3px rgba(76, 81, 191, 0.2);
+        }
+        .btn-primary {
+            background-color: #4c51bf;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #363b90;
+        }
+        .btn-google {
+            background-color: #db4437;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-google:hover {
+            background-color: #c23321;
+        }
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .nav-link:hover {
+            background-color: #e2e8f0;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            padding: 1.5rem;
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .category-card, .test-card {
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+        }
+        .category-card:hover, .test-card:hover {
+            border-color: #4c51bf;
+        }
+        .option-button {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #2d3748;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-align: left;
+            transition: all 0.2s ease-in-out;
+        }
+        .option-button:hover {
+            background-color: #edf2f7;
+            border-color: #a0aec0;
+        }
+        .option-button.selected {
+            background-color: #c3dafe;
+            border-color: #4c51bf;
+            color: #2a4365;
+        }
+        .option-button.correct {
+            background-color: #c6f6d5; /* Green for correct */
+            border-color: #38a169;
+            color: #276749;
+        }
+        .option-button.incorrect {
+            background-color: #fed7d7; /* Red for incorrect */
+            border-color: #e53e3e;
+            color: #9b2c2c;
+        }
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4c51bf;
+        }
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4c51bf;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            display: none; /* Hidden by default */
+        }
+        .spinner {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #4c51bf; /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Message Box -->
+    <div id="messageBox" class="message-box"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Header/Navigation -->
+    <header class="bg-white shadow-sm py-4">
+        <nav class="container flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Student Portal</h1>
+            <div id="navLinks" class="hidden md:flex items-center space-x-4">
+                <a href="#" id="homeNav" class="nav-link text-gray-700 font-medium">Home</a>
+                <a href="#" id="allTestsNav" class="nav-link text-gray-700 font-medium">All Tests</a>
+                <a href="#" id="logoutNav" class="nav-link text-red-600 font-medium"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" class="md:hidden text-gray-700 text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileNavMenu" class="md:hidden bg-white shadow-md py-2 px-4 hidden">
+            <a href="#" id="homeNavMobile" class="block nav-link text-gray-700 font-medium py-2">Home</a>
+            <a href="#" id="allTestsNavMobile" class="block nav-link text-gray-700 font-medium py-2">All Tests</a>
+            <a href="#" id="logoutNavMobile" class="block nav-link text-red-600 font-medium py-2"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+        </div>
+    </header>
+
+    <main class="flex-grow container py-8">
+        <!-- Authentication Section -->
+        <section id="authSection" class="auth-card">
+            <h2 class="text-3xl font-bold text-center mb-6 text-gray-800" id="authTitle">Login</h2>
+
+            <div class="flex justify-center mb-6">
+                <button id="loginToggle" class="form-toggle-btn active">Login</button>
+                <button id="signupToggle" class="form-toggle-btn ml-2">Sign Up</button>
+            </div>
+
+            <form id="authForm" class="space-y-4">
+                <div id="signupFields" class="space-y-4 hidden">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" id="name" class="input-field" placeholder="Your Name">
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                        <input type="tel" id="phone" class="input-field" placeholder="e.g., +1234567890">
+                    </div>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" class="input-field" placeholder="your@example.com" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="********" required>
+                </div>
+                <button type="submit" id="authSubmitBtn" class="w-full btn-primary">Login</button>
+            </form>
+
+            <div class="flex items-center my-6">
+                <hr class="flex-grow border-gray-300">
+                <span class="px-3 text-gray-500 text-sm">OR</span>
+                <hr class="flex-grow border-gray-300">
+            </div>
+
+            <button id="googleSignInBtn" class="w-full btn-google flex items-center justify-center space-x-2">
+                <i class="fab fa-google text-lg"></i>
+                <span>Sign In with Google</span>
+            </button>
+        </section>
+
+        <!-- Content Sections (Hidden until authenticated) -->
+        <section id="contentSection" class="hidden">
+            <!-- Welcome Message -->
+            <div id="welcomeMessage" class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-8 rounded-lg" role="alert">
+                <p class="font-bold text-xl">Welcome, <span id="userNameDisplay"></span>!</p>
+                <p id="firstLoginMessage" class="text-sm mt-1 hidden">It's great to have you here. Let's start learning!</p>
+            </div>
+
+            <!-- Home Section: Categories -->
+            <div id="homeSection" class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Explore Test Categories</h2>
+                <div id="categoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Categories will be loaded here dynamically -->
+                </div>
+                <p id="noCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No categories found. Please check back later!</p>
+            </div>
+
+            <!-- All Tests Section -->
+            <div id="allTestsSection" class="hidden mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">All Available Tests</h2>
+                <div class="mb-6">
+                    <input type="text" id="testSearchInput" class="input-field" placeholder="Search tests by name...">
+                </div>
+                <div id="allTestsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- All tests will be loaded here dynamically -->
+                </div>
+                <p id="noTestsMessage" class="text-gray-600 text-center mt-8 hidden">No tests found. Try adjusting your search!</p>
+            </div>
+
+            <!-- Test Page Section -->
+            <div id="testPageSection" class="hidden">
+                <h2 id="testTitle" class="text-3xl font-bold text-gray-800 mb-6"></h2>
+                <div id="questionsContainer" class="space-y-6">
+                    <!-- Questions will be loaded here dynamically -->
+                </div>
+                <button id="submitTestBtn" class="mt-8 w-full btn-primary hidden">Submit Test</button>
+            </div>
+
+            <!-- Test Results Section -->
+            <div id="resultsSection" class="hidden">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Your Test Results</h2>
+                <div class="bg-white card p-6 text-center mb-6">
+                    <p class="text-gray-600 text-lg mb-2">Your Score:</p>
+                    <p id="finalScore" class="score-display"></p>
+                    <p id="scoreOutOf" class="text-gray-500 text-lg"></p>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Detailed Review</h3>
+                <div id="reviewContainer" class="space-y-6">
+                    <!-- Question review will be loaded here -->
+                </div>
+
+                <div class="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button id="viewLeaderboardBtn" class="btn-primary">View Leaderboard</button>
+                    <button id="takeAnotherTestBtn" class="btn-primary">Take Another Test</button>
+                </div>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <div id="leaderboardSection" class="hidden">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Leaderboard for <span id="leaderboardTestTitle"></span></h2>
+                <div class="bg-white card p-6">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Leaderboard data will be loaded here -->
+                        </tbody>
+                    </table>
+                    <p id="noLeaderboardData" class="text-gray-600 text-center mt-4 hidden">No results found for this test yet.</p>
+                </div>
+                <button id="backToResultsBtn" class="mt-8 btn-primary">Back to Results</button>
+            </div>
+
+            <!-- Past Results Section -->
+            <div id="pastResultsSection" class="hidden">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Your Past Test Results</h2>
+                <div class="bg-white card p-6">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted At</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Review</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pastResultsBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Past results data will be loaded here -->
+                        </tbody>
+                    </table>
+                    <p id="noPastResultsData" class="text-gray-600 text-center mt-4 hidden">You haven't completed any tests yet.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {
+            getAuth,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            addDoc,
+            collection,
+            query,
+            where,
+            getDocs,
+            serverTimestamp,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration (from user prompt)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGPyk54-zJUE6iV3872XKLIq9OW3KCM6o",
+            authDomain: "skillyterns.firebaseapp.com",
+            databaseURL: "https://skillyterns-default-rtdb.firebaseio.com",
+            projectId: "skillyterns",
+            storageBucket: "skillyterns.firebasestorage.app",
+            messagingSenderId: "1034584532277",
+            appId: "1:1034584532277:web:fb79e2d96ee5127421d87c",
+            measurementId: "G-5G2GCWYEPL"
+        };
+
+        // Canvas environment variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentTest = null;
+        let userAnswers = [];
+        let currentTestId = null; // To store the ID of the test being taken
+        let currentTestTitle = ''; // To store the title of the test being taken
+
+        // --- DOM Elements ---
+        const authSection = document.getElementById('authSection');
+        const contentSection = document.getElementById('contentSection');
+        const loginToggle = document.getElementById('loginToggle');
+        const signupToggle = document.getElementById('signupToggle');
+        const authTitle = document.getElementById('authTitle');
+        const signupFields = document.getElementById('signupFields');
+        const authForm = document.getElementById('authForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+
+        const navLinks = document.getElementById('navLinks');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNavMenu = document.getElementById('mobileNavMenu');
+        const homeNav = document.getElementById('homeNav');
+        const allTestsNav = document.getElementById('allTestsNav');
+        const logoutNav = document.getElementById('logoutNav');
+        const homeNavMobile = document.getElementById('homeNavMobile');
+        const allTestsNavMobile = document.getElementById('allTestsNavMobile');
+        const logoutNavMobile = document.getElementById('logoutNavMobile');
+
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const firstLoginMessage = document.getElementById('firstLoginMessage');
+
+        const homeSection = document.getElementById('homeSection');
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const noCategoriesMessage = document.getElementById('noCategoriesMessage');
+
+        const allTestsSection = document.getElementById('allTestsSection');
+        const testSearchInput = document.getElementById('testSearchInput');
+        const allTestsContainer = document.getElementById('allTestsContainer');
+        const noTestsMessage = document.getElementById('noTestsMessage');
+
+        const testPageSection = document.getElementById('testPageSection');
+        const testTitleElement = document.getElementById('testTitle');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const submitTestBtn = document.getElementById('submitTestBtn');
+
+        const resultsSection = document.getElementById('resultsSection');
+        const finalScore = document.getElementById('finalScore');
+        const scoreOutOf = document.getElementById('scoreOutOf');
+        const reviewContainer = document.getElementById('reviewContainer');
+        const viewLeaderboardBtn = document.getElementById('viewLeaderboardBtn');
+        const takeAnotherTestBtn = document.getElementById('takeAnotherTestBtn');
+
+        const leaderboardSection = document.getElementById('leaderboardSection');
+        const leaderboardTestTitle = document.getElementById('leaderboardTestTitle');
+        const leaderboardBody = document.getElementById('leaderboardBody');
+        const noLeaderboardData = document.getElementById('noLeaderboardData');
+        const backToResultsBtn = document.getElementById('backToResultsBtn');
+
+        const pastResultsSection = document.getElementById('pastResultsSection');
+        const pastResultsBody = document.getElementById('pastResultsBody');
+        const noPastResultsData = document.getElementById('noPastResultsData');
+
+        const messageBox = document.getElementById('messageBox');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        let isLoginMode = true; // State for auth form
+
+        // --- Utility Functions ---
+        function showMessage(message, duration = 3000) {
+            messageBox.textContent = message;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, duration);
+        }
+
+        function showLoading() {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+
+        function hideAllSections() {
+            homeSection.classList.add('hidden');
+            allTestsSection.classList.add('hidden');
+            testPageSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            leaderboardSection.classList.add('hidden');
+            pastResultsSection.classList.add('hidden');
+        }
+
+        function showSection(sectionElement) {
+            hideAllSections();
+            sectionElement.classList.remove('hidden');
+        }
+
+        // --- Authentication Logic ---
+        loginToggle.addEventListener('click', () => {
+            isLoginMode = true;
+            authTitle.textContent = 'Login';
+            signupFields.classList.add('hidden');
+            authSubmitBtn.textContent = 'Login';
+            loginToggle.classList.add('active');
+            signupToggle.classList.remove('active');
+        });
+
+        signupToggle.addEventListener('click', () => {
+            isLoginMode = false;
+            authTitle.textContent = 'Sign Up';
+            signupFields.classList.remove('hidden');
+            authSubmitBtn.textContent = 'Sign Up';
+            signupToggle.classList.add('active');
+            loginToggle.classList.remove('active');
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const name = nameInput.value;
+            const phone = phoneInput.value;
+
+            showLoading();
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showMessage('Logged in successfully!');
+                } else {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
+                        uid: user.uid,
+                        name: name || 'Student',
+                        phone: phone || '',
+                        email: email
+                    });
+                    showMessage('Signed up successfully! Welcome!');
+                }
+            } catch (error) {
+                console.error('Auth error:', error.code, error.message);
+                let errorMessage = 'An error occurred. Please try again.';
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'Email already in use. Try logging in or use a different email.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password should be at least 6 characters.';
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = 'Invalid email or password.';
+                }
+                showMessage(errorMessage);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        googleSignInBtn.addEventListener('click', async () => {
+            showLoading();
+            try {
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+
+                // Check if user already exists in Firestore, if not, create
+                const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (!userDocSnap.exists()) {
+                    await setDoc(userDocRef, {
+                        uid: user.uid,
+                        name: user.displayName || 'Student',
+                        email: user.email,
+                        phone: user.phoneNumber || ''
+                    });
+                    showMessage('Signed in with Google successfully! Welcome!');
+                } else {
+                    showMessage('Logged in with Google successfully!');
+                }
+            } catch (error) {
+                console.error('Google Sign-In error:', error.code, error.message);
+                let errorMessage = 'Google Sign-In failed. Please try again.';
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Google Sign-In window closed.';
+                }
+                showMessage(errorMessage);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        logoutNav.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await signOut(auth);
+            showMessage('Logged out successfully!');
+        });
+        logoutNavMobile.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await signOut(auth);
+            showMessage('Logged out successfully!');
+            mobileNavMenu.classList.add('hidden'); // Close mobile menu
+        });
+
+        // --- Navigation Logic ---
+        homeNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(homeSection);
+            loadCategories();
+            loadPastResults(); // Load past results on home/dashboard
+        });
+        homeNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(homeSection);
+            loadCategories();
+            loadPastResults();
+            mobileNavMenu.classList.add('hidden');
+        });
+
+        allTestsNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(allTestsSection);
+            loadAllTests();
+        });
+        allTestsNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(allTestsSection);
+            loadAllTests();
+            mobileNavMenu.classList.add('hidden');
+        });
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileNavMenu.classList.toggle('hidden');
+        });
+
+        // --- Data Loading Functions ---
+
+        async function loadCategories() {
+            showLoading();
+            categoriesContainer.innerHTML = '';
+            noCategoriesMessage.classList.add('hidden');
+            try {
+                const categoriesColRef = collection(db, 'artifacts', appId, 'public', 'data', 'categories');
+                const q = query(categoriesColRef);
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noCategoriesMessage.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                const categories = [];
+                querySnapshot.forEach(doc => {
+                    categories.push({ id: doc.id, ...doc.data() });
+                });
+
+                for (const category of categories) {
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'card category-card p-4 rounded-lg shadow-md flex flex-col items-center justify-center text-center transform hover:scale-105 transition-transform duration-200';
+                    categoryCard.innerHTML = `
+                        <i class="fas fa-folder text-4xl text-blue-500 mb-3"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">${category.title}</h3>
+                        <p class="text-gray-600 text-sm mt-1">Click to view tests</p>
+                    `;
+                    categoryCard.addEventListener('click', () => loadTestsByCategory(category.title));
+                    categoriesContainer.appendChild(categoryCard);
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                showMessage('Failed to load categories. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadTestsByCategory(categoryTitle) {
+            showLoading();
+            allTestsContainer.innerHTML = '';
+            noTestsMessage.classList.add('hidden');
+            testSearchInput.value = ''; // Clear search input
+            showSection(allTestsSection); // Navigate to All Tests section
+
+            try {
+                const testsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'tests');
+                const q = query(testsColRef, where('category', '==', categoryTitle));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noTestsMessage.classList.remove('hidden');
+                    showMessage(`No tests found in ${categoryTitle} category.`);
+                    hideLoading();
+                    return;
+                }
+
+                const tests = [];
+                querySnapshot.forEach(doc => {
+                    tests.push({ id: doc.id, ...doc.data() });
+                });
+                displayTests(tests);
+
+            } catch (error) {
+                console.error('Error loading tests by category:', error);
+                showMessage('Failed to load tests for this category. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadAllTests() {
+            showLoading();
+            allTestsContainer.innerHTML = '';
+            noTestsMessage.classList.add('hidden');
+            testSearchInput.value = ''; // Clear search input
+            try {
+                const testsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'tests');
+                const q = query(testsColRef);
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noTestsMessage.classList.remove('hidden');
+                    showMessage('No tests found in the database.');
+                    hideLoading();
+                    return;
+                }
+
+                const tests = [];
+                querySnapshot.forEach(doc => {
+                    tests.push({ id: doc.id, ...doc.data() });
+                });
+                displayTests(tests);
+
+            } catch (error) {
+                console.error('Error loading all tests:', error);
+                showMessage('Failed to load all tests. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayTests(tests) {
+            allTestsContainer.innerHTML = '';
+            if (tests.length === 0) {
+                noTestsMessage.classList.remove('hidden');
+                return;
+            }
+            noTestsMessage.classList.add('hidden');
+
+            tests.forEach(test => {
+                const testCard = document.createElement('div');
+                testCard.className = 'card test-card p-4 rounded-lg shadow-md flex flex-col justify-between';
+                testCard.innerHTML = `
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">${test.title}</h3>
+                        <p class="text-sm text-gray-500 mb-3">Category: ${test.category}</p>
+                        <p class="text-sm text-gray-600">${test.questions ? test.questions.length : 0} Questions</p>
+                    </div>
+                    <button class="mt-4 btn-primary text-sm py-2 px-4 rounded-md self-end">Take Test</button>
+                `;
+                testCard.querySelector('button').addEventListener('click', () => startTest(test.id, test.title));
+                allTestsContainer.appendChild(testCard);
+            });
+        }
+
+        testSearchInput.addEventListener('input', async (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            showLoading();
+            try {
+                const testsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'tests');
+                const q = query(testsColRef);
+                const querySnapshot = await getDocs(q);
+                let filteredTests = [];
+                querySnapshot.forEach(doc => {
+                    const testData = { id: doc.id, ...doc.data() };
+                    if (testData.title.toLowerCase().includes(searchTerm)) {
+                        filteredTests.push(testData);
+                    }
+                });
+                displayTests(filteredTests);
+            } catch (error) {
+                console.error('Error searching tests:', error);
+                showMessage('Error searching tests.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        async function startTest(testId, testTitle) {
+            showLoading();
+            try {
+                const testDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'tests', testId);
+                const testDocSnap = await getDoc(testDocRef);
+
+                if (!testDocSnap.exists()) {
+                    showMessage('Test not found!');
+                    hideLoading();
+                    return;
+                }
+
+                currentTest = testDocSnap.data();
+                currentTestId = testId;
+                currentTestTitle = testTitle;
+                userAnswers = new Array(currentTest.questions.length).fill(null); // Initialize user answers
+                renderTest();
+                showSection(testPageSection);
+            } catch (error) {
+                console.error('Error starting test:', error);
+                showMessage('Failed to load test. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderTest() {
+            testTitleElement.textContent = currentTest.title;
+            questionsContainer.innerHTML = '';
+            submitTestBtn.classList.add('hidden'); // Hide until questions are rendered
+
+            if (!currentTest.questions || currentTest.questions.length === 0) {
+                questionsContainer.innerHTML = '<p class="text-gray-600 text-center">No questions available for this test.</p>';
+                return;
+            }
+
+            currentTest.questions.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'card p-5 rounded-lg shadow-sm';
+                questionDiv.innerHTML = `
+                    <p class="text-lg font-semibold text-gray-800 mb-4">Q${qIndex + 1}: ${q.questionText}</p>
+                    <div class="options-group space-y-3" data-question-index="${qIndex}">
+                        ${q.options.map((option, oIndex) => `
+                            <button class="option-button w-full" data-option-index="${oIndex}">
+                                ${String.fromCharCode(65 + oIndex)}. ${option}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            // Add event listeners for option selection
+            questionsContainer.querySelectorAll('.options-group').forEach(group => {
+                group.addEventListener('click', (e) => {
+                    const clickedButton = e.target.closest('.option-button');
+                    if (!clickedButton) return;
+
+                    const questionIndex = parseInt(group.dataset.questionIndex);
+                    const optionIndex = parseInt(clickedButton.dataset.optionIndex);
+
+                    // Deselect previous option for this question
+                    group.querySelectorAll('.option-button').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+
+                    // Select current option
+                    clickedButton.classList.add('selected');
+                    userAnswers[questionIndex] = optionIndex;
+
+                    // Show submit button if all questions are answered
+                    if (userAnswers.every(answer => answer !== null)) {
+                        submitTestBtn.classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        submitTestBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                showMessage('You must be logged in to submit a test.');
+                return;
+            }
+
+            if (!userAnswers.every(answer => answer !== null)) {
+                showMessage('Please answer all questions before submitting.');
+                return;
+            }
+
+            showLoading();
+            let score = 0;
+            currentTest.questions.forEach((q, index) => {
+                if (userAnswers[index] === q.correctAnswerIndex) {
+                    score++;
+                }
+            });
+
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'results'), {
+                    userId: currentUser.uid,
+                    testId: currentTestId,
+                    testTitle: currentTest.title, // Store test title for easier display
+                    score: score,
+                    totalQuestions: currentTest.questions.length,
+                    answers: userAnswers, // Store user's selected answers
+                    submittedAt: serverTimestamp()
+                });
+                showMessage('Test submitted successfully!');
+                displayResults(score, currentTest.questions.length);
+            } catch (error) {
+                console.error('Error submitting test:', error);
+                showMessage('Failed to submit test. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function displayResults(score, totalQuestions) {
+            finalScore.textContent = `${score}`;
+            scoreOutOf.textContent = `out of ${totalQuestions}`;
+            reviewContainer.innerHTML = '';
+
+            currentTest.questions.forEach((q, qIndex) => {
+                const userAnswer = userAnswers[qIndex];
+                const isCorrect = userAnswer === q.correctAnswerIndex;
+
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = `card p-5 rounded-lg shadow-sm ${isCorrect ? 'border-green-400' : 'border-red-400'} border-2`;
+                reviewDiv.innerHTML = `
+                    <p class="text-lg font-semibold text-gray-800 mb-3">Q${qIndex + 1}: ${q.questionText}</p>
+                    <div class="options-group space-y-2">
+                        ${q.options.map((option, oIndex) => {
+                            let optionClass = 'option-button w-full cursor-default';
+                            if (oIndex === q.correctAnswerIndex) {
+                                optionClass += ' correct';
+                            }
+                            if (oIndex === userAnswer && !isCorrect) {
+                                optionClass += ' incorrect';
+                            } else if (oIndex === userAnswer && isCorrect) {
+                                optionClass += ' selected'; // Keep selected style for correct answer
+                            }
+                            return `<button class="${optionClass}" data-option-index="${oIndex}">
+                                ${String.fromCharCode(65 + oIndex)}. ${option}
+                            </button>`;
+                        }).join('')}
+                    </div>
+                    <p class="mt-3 text-sm ${isCorrect ? 'text-green-600' : 'text-red-600'}">
+                        ${isCorrect ? '<i class="fas fa-check-circle mr-1"></i> Correct!' : '<i class="fas fa-times-circle mr-1"></i> Incorrect.'}
+                        The correct answer was: ${String.fromCharCode(65 + q.correctAnswerIndex)}. ${q.options[q.correctAnswerIndex]}
+                    </p>
+                `;
+                reviewContainer.appendChild(reviewDiv);
+            });
+
+            showSection(resultsSection);
+        }
+
+        takeAnotherTestBtn.addEventListener('click', () => {
+            showSection(homeSection);
+            loadCategories();
+            loadPastResults();
+        });
+
+        viewLeaderboardBtn.addEventListener('click', () => {
+            if (currentTestId) {
+                loadLeaderboard(currentTestId, currentTestTitle);
+            } else {
+                showMessage('No current test to view leaderboard for.');
+            }
+        });
+
+        backToResultsBtn.addEventListener('click', () => {
+            showSection(resultsSection);
+        });
+
+        async function loadLeaderboard(testId, testTitle) {
+            showLoading();
+            leaderboardTestTitle.textContent = testTitle;
+            leaderboardBody.innerHTML = '';
+            noLeaderboardData.classList.add('hidden');
+            try {
+                const resultsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'results');
+                // Note: Firestore orderBy requires an index. For simplicity and to avoid
+                // requiring manual index creation, we'll fetch all and sort in JS.
+                const q = query(resultsColRef, where('testId', '==', testId));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noLeaderboardData.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                let results = [];
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    results.push({
+                        userId: data.userId,
+                        score: data.score,
+                        totalQuestions: data.totalQuestions,
+                        submittedAt: data.submittedAt ? data.submittedAt.toDate() : new Date()
+                    });
+                });
+
+                // Sort results by score (descending), then by submittedAt (ascending)
+                results.sort((a, b) => {
+                    if (b.score !== a.score) {
+                        return b.score - a.score;
+                    }
+                    return a.submittedAt.getTime() - b.submittedAt.getTime();
+                });
+
+                // Fetch user names for display
+                const userPromises = results.map(async (result) => {
+                    const userDocRef = doc(db, 'artifacts', appId, 'users', result.userId);
+                    const userDocSnap = await getDoc(userDocRef);
+                    return {
+                        ...result,
+                        userName: userDocSnap.exists() ? userDocSnap.data().name : 'Unknown User'
+                    };
+                });
+                const populatedResults = await Promise.all(userPromises);
+
+                populatedResults.forEach((result, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${index + 1}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.userName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.score} / ${result.totalQuestions}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.submittedAt.toLocaleString()}</td>
+                    `;
+                    leaderboardBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                showMessage('Failed to load leaderboard. Please try again.');
+            } finally {
+                hideLoading();
+                showSection(leaderboardSection);
+            }
+        }
+
+        async function loadPastResults() {
+            if (!currentUser) {
+                pastResultsBody.innerHTML = '';
+                noPastResultsData.classList.remove('hidden');
+                return;
+            }
+
+            showLoading();
+            pastResultsBody.innerHTML = '';
+            noPastResultsData.classList.add('hidden');
+            try {
+                const resultsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'results');
+                const q = query(resultsColRef, where('userId', '==', currentUser.uid));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    noPastResultsData.classList.remove('hidden');
+                    hideLoading();
+                    return;
+                }
+
+                let results = [];
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    results.push({
+                        id: doc.id,
+                        testTitle: data.testTitle,
+                        score: data.score,
+                        totalQuestions: data.totalQuestions,
+                        submittedAt: data.submittedAt ? data.submittedAt.toDate() : new Date()
+                    });
+                });
+
+                // Sort by most recent
+                results.sort((a, b) => b.submittedAt.getTime() - a.submittedAt.getTime());
+
+                results.forEach(result => {
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${result.testTitle}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.score} / ${result.totalQuestions}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.submittedAt.toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="text-indigo-600 hover:text-indigo-900 review-past-test-btn" data-test-id="${result.testId}" data-result-id="${result.id}">Review</button>
+                        </td>
+                    `;
+                    pastResultsBody.appendChild(row);
+                });
+
+                // Add event listeners for review buttons
+                document.querySelectorAll('.review-past-test-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const testId = e.target.dataset.testId;
+                        const resultId = e.target.dataset.resultId;
+                        reviewPastTest(testId, resultId);
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error loading past results:', error);
+                showMessage('Failed to load past results.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function reviewPastTest(testId, resultId) {
+            showLoading();
+            try {
+                const testDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'tests', testId);
+                const testDocSnap = await getDoc(testDocRef);
+
+                const resultDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'results', resultId);
+                const resultDocSnap = await getDoc(resultDocRef);
+
+                if (!testDocSnap.exists() || !resultDocSnap.exists()) {
+                    showMessage('Test or result data not found for review.');
+                    hideLoading();
+                    return;
+                }
+
+                currentTest = testDocSnap.data();
+                userAnswers = resultDocSnap.data().answers;
+                currentTestId = testId; // Set for leaderboard access
+                currentTestTitle = currentTest.title; // Set for leaderboard access
+
+                displayResults(resultDocSnap.data().score, currentTest.questions.length);
+            } catch (error) {
+                console.error('Error reviewing past test:', error);
+                showMessage('Failed to review past test. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+
+        // --- Authentication State Change Listener ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                authSection.classList.add('hidden');
+                contentSection.classList.remove('hidden');
+
+                // Fetch user data from Firestore
+                const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    userNameDisplay.textContent = userData.name || userData.email;
+                    // Check if 'name' was just set (implies first login via email/pass signup)
+                    // Or if it's a new Google sign-in where displayName wasn't saved before
+                    if (userData.name === 'Student' && !user.displayName) { // Basic check for first login
+                         firstLoginMessage.classList.remove('hidden');
+                    } else {
+                        firstLoginMessage.classList.add('hidden');
+                    }
+                } else {
+                    // This case should ideally not happen if user creation is handled correctly
+                    // but as a fallback, display email
+                    userNameDisplay.textContent = user.email;
+                    firstLoginMessage.classList.remove('hidden'); // Treat as first login
+                }
+
+                // Initial data load for authenticated users
+                showSection(homeSection);
+                loadCategories();
+                loadPastResults();
+
+            } else {
+                currentUser = null;
+                authSection.classList.remove('hidden');
+                contentSection.classList.add('hidden');
+                // Reset auth form to login mode
+                loginToggle.click();
+                emailInput.value = '';
+                passwordInput.value = '';
+                nameInput.value = '';
+                phoneInput.value = '';
+                welcomeMessage.classList.add('hidden'); // Hide welcome message on logout
+            }
+        });
+
+        // --- Initial Firebase Authentication for Canvas Environment ---
+        window.onload = async function() {
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Signed in with custom token.");
+                } catch (error) {
+                    console.error("Error signing in with custom token:", error);
+                    // Fallback to anonymous if custom token fails
+                    try {
+                        await signInAnonymously(auth);
+                        console.log("Signed in anonymously as fallback.");
+                    } catch (anonError) {
+                        console.error("Error signing in anonymously:", anonError);
+                    }
+                }
+            } else {
+                try {
+                    await signInAnonymously(auth);
+                    console.log("Signed in anonymously (no custom token provided).");
+                } catch (error) {
+                    console.error("Error signing in anonymously:", error);
+                }
+            }
+        };
+
+        // --- Firestore Data Seeding (for initial setup) ---
+        // You can run this once to populate your Firestore with some initial data.
+        // REMEMBER TO REMOVE OR COMMENT OUT THIS SECTION AFTER INITIAL SEEDING
+        // OR ADD A CHECK TO PREVENT REPEATED EXECUTION IN PRODUCTION.
+
+        // async function seedFirestore() {
+        //     console.log("Seeding Firestore...");
+        //     showLoading();
+        //     try {
+        //         // Add categories
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', 'math'), { title: 'Mathematics' });
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', 'science'), { title: 'Science' });
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', 'history'), { title: 'History' });
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', 'programming'), { title: 'Programming' });
+
+        //         // Add tests
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tests', 'algebraBasics'), {
+        //             title: 'Algebra Basics',
+        //             category: 'Mathematics',
+        //             questions: [
+        //                 { questionText: 'What is 2 + 2?', options: ['3', '4', '5', '6'], correctAnswerIndex: 1 },
+        //                 { questionText: 'Solve for x: x + 5 = 10', options: ['3', '4', '5', '6'], correctAnswerIndex: 2 },
+        //                 { questionText: 'If y = 3x and x = 4, what is y?', options: ['7', '10', '12', '15'], correctAnswerIndex: 2 },
+        //                 { questionText: 'Simplify: 2x + 3x', options: ['5', '6x', '5x', 'x'], correctAnswerIndex: 2 },
+        //                 { questionText: 'What is the square root of 9?', options: ['2', '3', '4', '81'], correctAnswerIndex: 1 }
+        //             ]
+        //         });
+
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tests', 'physicsFundamentals'), {
+        //             title: 'Physics Fundamentals',
+        //             category: 'Science',
+        //             questions: [
+        //                 { questionText: 'What is the SI unit of force?', options: ['Joule', 'Watt', 'Newton', 'Volt'], correctAnswerIndex: 2 },
+        //                 { questionText: 'Which law states that for every action, there is an equal and opposite reaction?', options: ['Newton\'s First Law', 'Newton\'s Second Law', 'Newton\'s Third Law', 'Law of Conservation of Energy'], correctAnswerIndex: 2 },
+        //                 { questionText: 'What is the formula for kinetic energy?', options: ['mgh', '1/2mv^2', 'F=ma', 'P=IV'], correctAnswerIndex: 1 },
+        //                 { questionText: 'What is the speed of light in a vacuum (approximate)?', options: ['3x10^5 m/s', '3x10^8 m/s', '3x10^10 m/s', '3x10^12 m/s'], correctAnswerIndex: 1 }
+        //             ]
+        //         });
+
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tests', 'worldHistory'), {
+        //             title: 'World War II History',
+        //             category: 'History',
+        //             questions: [
+        //                 { questionText: 'When did World War II begin?', options: ['1938', '1939', '1940', '1941'], correctAnswerIndex: 1 },
+        //                 { questionText: 'Which country was NOT an Axis power?', options: ['Germany', 'Italy', 'Japan', 'United States'], correctAnswerIndex: 3 },
+        //                 { questionText: 'Who was the Prime Minister of the United Kingdom during most of WWII?', options: ['Neville Chamberlain', 'Winston Churchill', 'Clement Attlee', 'Franklin D. Roosevelt'], correctAnswerIndex: 1 }
+        //             ]
+        //         });
+
+        //         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tests', 'javascriptBasics'), {
+        //             title: 'JavaScript Basics',
+        //             category: 'Programming',
+        //             questions: [
+        //                 { questionText: 'What keyword is used to declare a variable in JavaScript?', options: ['var', 'let', 'const', 'All of the above'], correctAnswerIndex: 3 },
+        //                 { questionText: 'Which method is used to print something to the console?', options: ['console.log()', 'print()', 'log.console()', 'display()'], correctAnswerIndex: 0 },
+        //                 { questionText: 'What is the result of 5 + "5"?', options: ['10', '55', 'Error', 'Undefined'], correctAnswerIndex: 1 },
+        //                 { questionText: 'Which operator is used for strict equality?', options: ['==', '!=', '===', '!=='], correctAnswerIndex: 2 }
+        //             ]
+        //         });
+
+        //         showMessage("Firestore seeded successfully!");
+        //     } catch (error) {
+        //         console.error("Error seeding Firestore:", error);
+        //         showMessage("Failed to seed Firestore.");
+        //     } finally {
+        //         hideLoading();
+        //     }
+        // }
+
+        // Uncomment the line below and run once to seed your database
+        // window.addEventListener('load', seedFirestore);
+
+    </script>
+</body>
+</html>
