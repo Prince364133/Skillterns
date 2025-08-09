@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Test Portal</title>
+    <title>Student </title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
@@ -61,6 +61,24 @@
         }
         .btn-primary:hover {
             background-color: #363b90;
+        }
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        .btn-secondary:hover {
+            background: #e9ecef;
+            color: #495057;
         }
         .btn-google {
             background-color: #db4437;
@@ -306,6 +324,7 @@
                 <a href="#" id="testCategoriesNav" class="nav-link text-gray-700 font-medium">Test Categories</a>
                 <a href="#" id="postCategoriesNav" class="nav-link text-gray-700 font-medium">Post Categories</a>
                 <a href="#" id="allTestsNav" class="nav-link text-gray-700 font-medium">All Tests</a>
+                <a href="#" id="leaderboardNav" class="nav-link text-gray-700 font-medium"><i class="fas fa-trophy mr-1"></i>Leaderboard</a>
                 <a href="#" id="logoutNav" class="nav-link text-red-600 font-medium"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
             </div>
             <!-- Mobile Menu Button -->
@@ -321,6 +340,7 @@
             <a href="#" id="testCategoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Test Categories</a>
             <a href="#" id="postCategoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Post Categories</a>
             <a href="#" id="allTestsNavMobile" class="block nav-link text-gray-700 font-medium py-2">All Tests</a>
+            <a href="#" id="leaderboardNavMobile" class="block nav-link text-gray-700 font-medium py-2"><i class="fas fa-trophy mr-1"></i>Leaderboard</a>
             <a href="#" id="logoutNavMobile" class="block nav-link text-red-600 font-medium py-2"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
         </div>
     </header>
@@ -345,7 +365,19 @@
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
                         <input type="tel" id="phone" class="input-field" placeholder="e.g., +1234567890">
                     </div>
+                                        <!-- Direct Signup Info -->
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-user-plus text-green-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-medium text-green-900">Direct Signup</h4>
+                                <p class="text-sm text-green-700 mt-1">Your account will be created immediately after clicking Sign Up</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <!-- Email verification sections removed - direct signup only -->
+                <div id="emailPasswordSection">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input type="email" id="email" class="input-field" placeholder="your@example.com" required>
@@ -353,6 +385,7 @@
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <input type="password" id="password" class="input-field" placeholder="********" required>
+                    </div>
                 </div>
                 <button type="submit" id="authSubmitBtn" class="w-full btn-primary">Login</button>
             </form>
@@ -367,6 +400,17 @@
                 <i class="fab fa-google text-lg"></i>
                 <span>Sign In with Google</span>
             </button>
+            
+            <!-- Debug Authentication Button -->
+            <button id="testAuthBtn" class="w-full mt-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600" style="display: none;">
+                Test Firebase Connection
+            </button>
+            
+            <!-- Connection Status Indicator -->
+            <div id="connectionStatus" class="mt-2 text-center text-sm hidden">
+                <span id="connectionIndicator" class="inline-block w-2 h-2 rounded-full mr-2"></span>
+                <span id="connectionText">Checking connection...</span>
+            </div>
         </section>
 
         <!-- Content Sections (Hidden until authenticated) -->
@@ -390,7 +434,12 @@
 
             <!-- Posts Section -->
             <div id="postsSection" class="hidden mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Study Posts</h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">Study Posts</h2>
+                    <button id="backFromPostsBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
                 <div class="mb-6">
                     <input type="text" id="postSearchInput" class="input-field" placeholder="Search posts by title...">
                 </div>
@@ -402,7 +451,12 @@
 
             <!-- Profile Section -->
             <div id="profileSection" class="hidden mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Your Profile</h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">Your Profile</h2>
+                    <button id="backFromProfileBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="card p-6">
                         <h3 class="text-xl font-semibold text-gray-800 mb-4">Account Info</h3>
@@ -422,21 +476,51 @@
 
             <!-- Test Categories Section -->
             <div id="testCategoriesSection" class="hidden mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Test Categories</h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">Test Categories</h2>
+                    <button id="backFromTestCategoriesBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
                 <div id="testCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 <p id="noTestCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No test categories found.</p>
-                    </div>
+            </div>
 
             <!-- Post Categories Section -->
             <div id="postCategoriesSection" class="hidden mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Post Categories</h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">Post Categories</h2>
+                    <button id="backFromPostCategoriesBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
                 <div id="postCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                    <p id="noPostCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No post categories found.</p>
+                <p id="noPostCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No post categories found.</p>
+            </div>
+
+            <!-- Posts by Category Section -->
+            <div id="postsByCategorySection" class="hidden mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 id="postsCategoryTitle" class="text-3xl font-bold text-gray-800">Posts in Category</h2>
+                        <p id="postsCategoryCount" class="text-sm text-gray-600 mt-1"></p>
+                    </div>
+                    <button id="backToPostCategoriesBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Categories
+                    </button>
+                </div>
+                <div id="postsByCategoryContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <p id="noPostsInCategoryMessage" class="text-gray-600 text-center mt-8 hidden">No posts found in this category.</p>
             </div>
 
             <!-- All Tests Section -->
             <div id="allTestsSection" class="hidden mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">All Available Tests</h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">All Available Tests</h2>
+                    <button id="backFromAllTestsBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
                 <div class="mb-6">
                     <input type="text" id="testSearchInput" class="input-field" placeholder="Search tests by name...">
                 </div>
@@ -448,11 +532,42 @@
 
             <!-- Test Page Section -->
             <div id="testPageSection" class="hidden">
-                <h2 id="testTitle" class="text-3xl font-bold text-gray-800 mb-6"></h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 id="testTitle" class="text-3xl font-bold text-gray-800"></h2>
+                    <button id="backFromTestBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Tests
+                    </button>
+                </div>
                 <div id="questionsContainer" class="space-y-6">
                     <!-- Questions will be loaded here dynamically -->
                 </div>
                 <button id="submitTestBtn" class="mt-8 w-full btn-primary hidden">Submit Test</button>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <div id="leaderboardSection" class="hidden mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">Student Leaderboard</h2>
+                        <p class="text-sm text-gray-600 mt-1">Top performing students ranked by average scores</p>
+                    </div>
+                    <button id="backFromLeaderboardBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+                        <h3 class="text-xl font-semibold flex items-center">
+                            <i class="fas fa-trophy mr-2"></i>Rankings
+                        </h3>
+                    </div>
+                    <div id="leaderboardContainer" class="p-6">
+                        <div class="text-center py-8">
+                            <i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i>
+                            <p class="text-gray-600 mt-2">Loading leaderboard...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Test Results Section -->
@@ -476,7 +591,7 @@
             </div>
 
             <!-- Leaderboard Section -->
-            <div id="leaderboardSection" class="hidden">
+            <div id="testLeaderboardSection" class="hidden">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Leaderboard for <span id="leaderboardTestTitle"></span></h2>
                 <div class="bg-white card p-6">
                     <div class="overflow-x-auto">
@@ -578,7 +693,7 @@
             deleteDoc
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (from user prompt)
+        // Firebase Configuration - Enhanced for better network handling
         const firebaseConfig = {
             apiKey: "AIzaSyAGPyk54-zJUE6iV3872XKLIq9OW3KCM6o",
             authDomain: "skillyterns.firebaseapp.com",
@@ -590,28 +705,113 @@
             measurementId: "G-5G2GCWYEPL"
         };
 
+        // Network connectivity settings for Firebase
+        const firebaseSettings = {
+            cacheSizeBytes: 1048576, // 1MB cache
+            merge: true
+        };
+
         // Canvas environment variables
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Initialize Firebase with enhanced error handling
+        console.log('Initializing Firebase...'); // Debug log
+        let app, auth, db;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            // Configure Firestore for better offline support
+            if (typeof enableNetwork !== 'undefined') {
+                enableNetwork(db);
+            }
+            
+            console.log('Firebase initialized successfully'); // Debug log
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            showMessage('Firebase connection failed. Please check your internet connection and try again.');
+        }
 
         let currentUser = null;
         let currentTest = null;
         let userAnswers = [];
         let currentTestId = null; // To store the ID of the test being taken
         let currentTestTitle = ''; // To store the title of the test being taken
+        
+        // Authentication state (direct signup/login only)
+        let isLoginMode = true;
+        
+        // Performance optimization: Data caching
+        let cachedData = {
+            posts: null,
+            postCategories: null,
+            testCategories: null,
+            tests: null,
+            lastFetchTime: {
+                posts: 0,
+                postCategories: 0,
+                testCategories: 0,
+                tests: 0
+            }
+        };
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+
+        // Performance optimization functions
+        function isCacheValid(dataType) {
+            return cachedData[dataType] && 
+                   (Date.now() - cachedData.lastFetchTime[dataType]) < CACHE_DURATION;
+        }
+
+        function setCachedData(dataType, data) {
+            cachedData[dataType] = data;
+            cachedData.lastFetchTime[dataType] = Date.now();
+        }
+
+        // Debounce function for search inputs
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Lazy loading with Intersection Observer
+        function setupLazyLoading() {
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.remove('lazy');
+                            imageObserver.unobserve(img);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('img[data-src]').forEach(img => {
+                    imageObserver.observe(img);
+                });
+            }
+        }
 
         // --- DOM Elements ---
+        console.log('Getting DOM elements...'); // Debug log
         const authSection = document.getElementById('authSection');
         const contentSection = document.getElementById('contentSection');
         const loginToggle = document.getElementById('loginToggle');
         const signupToggle = document.getElementById('signupToggle');
         const authTitle = document.getElementById('authTitle');
         const signupFields = document.getElementById('signupFields');
+        const emailPasswordSection = document.getElementById('emailPasswordSection');
         const authForm = document.getElementById('authForm');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
@@ -619,6 +819,40 @@
         const phoneInput = document.getElementById('phone');
         const authSubmitBtn = document.getElementById('authSubmitBtn');
         const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const testAuthBtn = document.getElementById('testAuthBtn');
+        
+        // Check if critical elements exist
+        console.log('Critical DOM elements check:', {
+            authForm: !!authForm,
+            emailInput: !!emailInput,
+            passwordInput: !!passwordInput,
+            authSubmitBtn: !!authSubmitBtn,
+            loginToggle: !!loginToggle,
+            signupToggle: !!signupToggle,
+            testAuthBtn: !!testAuthBtn
+        });
+        
+        // Enable test button in development
+        if (testAuthBtn) {
+            testAuthBtn.style.display = 'block';
+            testAuthBtn.addEventListener('click', async () => {
+                console.log('Testing Firebase connection...');
+                showMessage('Testing Firebase connection...');
+                try {
+                    // Test anonymous sign in to verify Firebase is working
+                    const result = await signInAnonymously(auth);
+                    console.log('Firebase test successful:', result.user.uid);
+                    showMessage('Firebase connection successful!');
+                    
+                    // Sign out immediately
+                    await signOut(auth);
+                    console.log('Test user signed out');
+                } catch (error) {
+                    console.error('Firebase test failed:', error);
+                    showMessage(`Firebase test failed: ${error.message}`);
+                }
+            });
+        }
 
         const navLinks = document.getElementById('navLinks');
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -629,6 +863,7 @@
         const testCategoriesNav = document.getElementById('testCategoriesNav');
         const postCategoriesNav = document.getElementById('postCategoriesNav');
         const allTestsNav = document.getElementById('allTestsNav');
+        const leaderboardNav = document.getElementById('leaderboardNav');
         const logoutNav = document.getElementById('logoutNav');
         const homeNavMobile = document.getElementById('homeNavMobile');
         const postsNavMobile = document.getElementById('postsNavMobile');
@@ -636,6 +871,7 @@
         const testCategoriesNavMobile = document.getElementById('testCategoriesNavMobile');
         const postCategoriesNavMobile = document.getElementById('postCategoriesNavMobile');
         const allTestsNavMobile = document.getElementById('allTestsNavMobile');
+        const leaderboardNavMobile = document.getElementById('leaderboardNavMobile');
         const logoutNavMobile = document.getElementById('logoutNavMobile');
 
         const welcomeMessage = document.getElementById('welcomeMessage');
@@ -665,6 +901,25 @@
         const postCategoriesContainer = document.getElementById('postCategoriesContainer');
         const noTestCategoriesMessage = document.getElementById('noTestCategoriesMessage');
         const noPostCategoriesMessage = document.getElementById('noPostCategoriesMessage');
+        
+        const postsByCategorySection = document.getElementById('postsByCategorySection');
+        const postsByCategoryContainer = document.getElementById('postsByCategoryContainer');
+        const postsCategoryTitle = document.getElementById('postsCategoryTitle');
+        const postsCategoryCount = document.getElementById('postsCategoryCount');
+        const backToPostCategoriesBtn = document.getElementById('backToPostCategoriesBtn');
+        const noPostsInCategoryMessage = document.getElementById('noPostsInCategoryMessage');
+        
+        const leaderboardSection = document.getElementById('leaderboardSection');
+        const leaderboardContainer = document.getElementById('leaderboardContainer');
+        const backFromLeaderboardBtn = document.getElementById('backFromLeaderboardBtn');
+        
+        // Additional back navigation buttons
+        const backFromPostsBtn = document.getElementById('backFromPostsBtn');
+        const backFromProfileBtn = document.getElementById('backFromProfileBtn');
+        const backFromTestCategoriesBtn = document.getElementById('backFromTestCategoriesBtn');
+        const backFromPostCategoriesBtn = document.getElementById('backFromPostCategoriesBtn');
+        const backFromAllTestsBtn = document.getElementById('backFromAllTestsBtn');
+        const backFromTestBtn = document.getElementById('backFromTestBtn');
         const overallLeaderboardSection = document.getElementById('overallLeaderboardSection');
         const overallLeaderboardBody = document.getElementById('overallLeaderboardBody');
         const myOverallRankBanner = document.getElementById('myOverallRankBanner');
@@ -687,7 +942,7 @@
         const viewLeaderboardBtn = document.getElementById('viewLeaderboardBtn');
         const takeAnotherTestBtn = document.getElementById('takeAnotherTestBtn');
 
-        const leaderboardSection = document.getElementById('leaderboardSection');
+        const testLeaderboardSection = document.getElementById('testLeaderboardSection');
         const leaderboardTestTitle = document.getElementById('leaderboardTestTitle');
         const leaderboardBody = document.getElementById('leaderboardBody');
         const noLeaderboardData = document.getElementById('noLeaderboardData');
@@ -699,8 +954,6 @@
 
         const messageBox = document.getElementById('messageBox');
         const loadingOverlay = document.getElementById('loadingOverlay');
-
-        let isLoginMode = true; // State for auth form
 
         // --- Utility Functions ---
         function showMessage(message, duration = 3000) {
@@ -722,12 +975,16 @@
         function hideAllSections() {
             homeSection.classList.add('hidden');
             postsSection.classList.add('hidden');
+            profileSection.classList.add('hidden');
             testCategoriesSection.classList.add('hidden');
             postCategoriesSection.classList.add('hidden');
+            postsByCategorySection.classList.add('hidden');
             allTestsSection.classList.add('hidden');
             testPageSection.classList.add('hidden');
             resultsSection.classList.add('hidden');
             leaderboardSection.classList.add('hidden');
+            testLeaderboardSection.classList.add('hidden');
+            overallLeaderboardSection.classList.add('hidden');
             pastResultsSection.classList.add('hidden');
         }
 
@@ -737,16 +994,36 @@
         }
 
         // --- Authentication Logic ---
+        
+        // Direct signup/login only - no verification needed
+        
+        function resetAuthForm() {
+            // Reset form visibility
+            emailPasswordSection.classList.remove('hidden');
+            signupFields.classList.add('hidden');
+            
+            // Show submit button and reset
+            authSubmitBtn.style.display = 'block';
+            authSubmitBtn.textContent = 'Login';
+            
+            // Clear inputs
+            emailInput.value = '';
+            passwordInput.value = '';
+            nameInput.value = '';
+            phoneInput.value = '';
+        }
+
         loginToggle.addEventListener('click', () => {
+            resetAuthForm();
             isLoginMode = true;
             authTitle.textContent = 'Login';
-            signupFields.classList.add('hidden');
             authSubmitBtn.textContent = 'Login';
             loginToggle.classList.add('active');
             signupToggle.classList.remove('active');
         });
 
         signupToggle.addEventListener('click', () => {
+            resetAuthForm();
             isLoginMode = false;
             authTitle.textContent = 'Sign Up';
             signupFields.classList.remove('hidden');
@@ -755,58 +1032,165 @@
             loginToggle.classList.remove('active');
         });
 
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            const name = nameInput.value;
-            const phone = phoneInput.value;
+        // Email verification functionality removed - using direct signup only
 
-            showLoading();
+        // OTP functions removed - using email link verification only
+
+
+
+
+
+        // Resend OTP functionality removed - using email link verification only
+
+        // Email verification functions removed - using direct signup only
+
+        // All email verification functions removed - direct signup only
+
+        // Network connectivity check function
+        async function checkNetworkConnectivity() {
             try {
-                if (isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    showMessage('Logged in successfully!');
-                } else {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    
-                    // Save to users collection for student portal
-                    await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
-                        uid: user.uid,
-                        name: name || 'Student',
-                        phone: phone || '',
-                        email: email
-                    });
-                    
-                    // Also save to students collection for admin panel
-                    await setDoc(doc(db, 'artifacts', appId, 'public/data/students', user.uid), {
-                        uid: user.uid,
-                        name: name || 'Student',
-                        phoneNumber: phone || '',
-                        email: email,
-                        createdAt: new Date()
-                    });
-                    
-                    showMessage('Signed up successfully! Welcome!');
-                }
+                const response = await fetch('https://www.google.com/favicon.ico', { 
+                    method: 'HEAD', 
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    signal: AbortSignal.timeout(5000)
+                });
+                return true;
             } catch (error) {
-                console.error('Auth error:', error.code, error.message);
-                let errorMessage = 'An error occurred. Please try again.';
-                if (error.code === 'auth/email-already-in-use') {
-                    errorMessage = 'Email already in use. Try logging in or use a different email.';
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMessage = 'Invalid email address.';
-                } else if (error.code === 'auth/weak-password') {
-                    errorMessage = 'Password should be at least 6 characters.';
-                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    errorMessage = 'Invalid email or password.';
-                }
-                showMessage(errorMessage);
-            } finally {
-                hideLoading();
+                console.warn('Network connectivity check failed:', error);
+                return false;
             }
+        }
+
+        // Enhanced authentication handler with network error handling
+        console.log('Adding form submit listener...'); // Debug log
+        if (authForm) {
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('Form submitted'); // Debug log
+
+                // Get form values
+                const email = emailInput.value?.trim();
+                const password = passwordInput.value?.trim();
+                const name = nameInput.value?.trim();
+
+                console.log('Form values:', { email, password, name, isLoginMode }); // Debug log
+
+                if (!email || !password) {
+                    showMessage('Please enter both email and password.');
+                    return;
+                }
+
+                // Check network connectivity first
+                const isOnline = await checkNetworkConnectivity();
+                if (!isOnline) {
+                    showMessage('Network connection failed. Please check your internet connection and try again.');
+                    return;
+                }
+
+                showLoading();
+                
+                // Retry logic for network requests
+                const maxRetries = 3;
+                let attempt = 0;
+                
+                while (attempt < maxRetries) {
+                    try {
+                        if (isLoginMode) {
+                            console.log(`Attempting login... (attempt ${attempt + 1})`); // Debug log
+                            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                            console.log('Login successful:', userCredential.user.uid); // Debug log
+                            showMessage('Logged in successfully!');
+                            break; // Success, exit retry loop
+                        } else {
+                            // Direct signup without verification
+                            if (!name) {
+                                showMessage('Please enter your name.');
+                                hideLoading();
+                                return;
+                            }
+                            
+                            console.log(`Creating account directly... (attempt ${attempt + 1})`); // Debug log
+                            
+                            // Create account immediately
+                            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                            const user = userCredential.user;
+                            console.log('Account created:', user.uid); // Debug log
+                            
+                            // Save to users collection for student portal
+                            await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
+                                uid: user.uid,
+                                name: name,
+                                phone: phoneInput.value?.trim() || '',
+                                email: email,
+                                emailVerified: true // Account is ready to use immediately
+                            });
+                            
+                            // Also save to students collection for admin panel
+                            await setDoc(doc(db, 'artifacts', appId, 'public/data/students', user.uid), {
+                                uid: user.uid,
+                                name: name,
+                                phoneNumber: phoneInput.value?.trim() || '',
+                                email: email,
+                                emailVerified: true,
+                                createdAt: new Date()
+                            });
+                            
+                            showMessage('Account created successfully! Welcome!');
+                            break; // Success, exit retry loop
+                        }
+                    } catch (error) {
+                        attempt++;
+                        console.error(`Auth error (attempt ${attempt}):`, error);
+                        
+                        if (error.code === 'auth/network-request-failed' && attempt < maxRetries) {
+                            console.log(`Network error, retrying in ${attempt * 1000}ms...`);
+                            await new Promise(resolve => setTimeout(resolve, attempt * 1000)); // Progressive delay
+                            continue; // Retry
+                        }
+                        
+                        // Handle specific errors or final failure
+                let errorMessage = 'An error occurred. Please try again.';
+                        
+                        switch (error.code) {
+                            case 'auth/network-request-failed':
+                                errorMessage = 'Network connection failed. Please check your internet connection and try again.';
+                                break;
+                            case 'auth/email-already-in-use':
+                    errorMessage = 'Email already in use. Try logging in or use a different email.';
+                                break;
+                            case 'auth/invalid-email':
+                    errorMessage = 'Invalid email address.';
+                                break;
+                            case 'auth/weak-password':
+                    errorMessage = 'Password should be at least 6 characters.';
+                                break;
+                            case 'auth/user-not-found':
+                                errorMessage = 'No account found with this email. Please sign up first.';
+                                break;
+                            case 'auth/wrong-password':
+                                errorMessage = 'Incorrect password. Please try again.';
+                                break;
+                            case 'auth/invalid-credential':
+                                errorMessage = 'Invalid email or password. Please check your credentials.';
+                                break;
+                            case 'auth/too-many-requests':
+                                errorMessage = 'Too many failed attempts. Please try again later.';
+                                break;
+                            default:
+                                errorMessage = `Authentication failed: ${error.message}`;
+                        }
+                        
+                showMessage(errorMessage);
+                        break; // Exit retry loop on final failure
+            }
+                }
+                
+                hideLoading();
         });
+        } else {
+            console.error('Auth form not found!');
+        }
 
         googleSignInBtn.addEventListener('click', async () => {
             showLoading();
@@ -902,18 +1286,6 @@
             mobileNavMenu.classList.add('hidden');
         });
 
-        profileNav.addEventListener('click', (e) => {
-            e.preventDefault();
-            showSection(profileSection);
-            loadProfile();
-        });
-        profileNavMobile.addEventListener('click', (e) => {
-            e.preventDefault();
-            showSection(profileSection);
-            loadProfile();
-            mobileNavMenu.classList.add('hidden');
-        });
-
         testCategoriesNav.addEventListener('click', (e) => {
             e.preventDefault();
             showSection(testCategoriesSection);
@@ -950,8 +1322,53 @@
             mobileNavMenu.classList.add('hidden');
         });
 
+        leaderboardNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(leaderboardSection);
+            loadLeaderboard();
+        });
+        leaderboardNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(leaderboardSection);
+            loadLeaderboard();
+            mobileNavMenu.classList.add('hidden');
+        });
+
         mobileMenuBtn.addEventListener('click', () => {
             mobileNavMenu.classList.toggle('hidden');
+        });
+
+        // Back navigation event listeners
+        backToPostCategoriesBtn.addEventListener('click', () => {
+            showSection(postCategoriesSection);
+        });
+
+        backFromLeaderboardBtn.addEventListener('click', () => {
+            showSection(homeSection);
+        });
+
+        backFromPostsBtn.addEventListener('click', () => {
+            showSection(homeSection);
+        });
+
+        backFromProfileBtn.addEventListener('click', () => {
+            showSection(homeSection);
+        });
+
+        backFromTestCategoriesBtn.addEventListener('click', () => {
+            showSection(homeSection);
+        });
+
+        backFromPostCategoriesBtn.addEventListener('click', () => {
+            showSection(homeSection);
+        });
+
+        backFromAllTestsBtn.addEventListener('click', () => {
+            showSection(homeSection);
+        });
+
+        backFromTestBtn.addEventListener('click', () => {
+            showSection(homeSection);
         });
 
         // --- Data Loading Functions ---
@@ -1102,7 +1519,7 @@
                             <div class="flex items-center gap-3">
                                 <button class="like-btn" data-type="test" data-id="${item.id}"><i class="far fa-heart mr-2"></i>Like</button>
                                 <span class="text-sm text-gray-500" data-like-count="test:${item.id}">0</span>
-                                <button class="btn-primary flex-1" onclick="startTest('${item.id}', '${item.data.title.replace(/'/g, "&#39;")}')">Start Test</button>
+                                <button class="btn-primary flex-1 start-test-btn" data-test-id="${item.id}" data-test-title="${item.data.title}">Start Test</button>
                             </div>
                         `;
                         recentFeedContainer.appendChild(testCard);
@@ -1115,6 +1532,17 @@
                         const itemType = el.getAttribute('data-type');
                         const itemId = el.getAttribute('data-id');
                         await toggleLike(itemType, itemId, el);
+                    });
+                });
+                
+                // Bind start test buttons
+                recentFeedContainer.querySelectorAll('.start-test-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        const testId = e.currentTarget.getAttribute('data-test-id');
+                        const testTitle = e.currentTarget.getAttribute('data-test-title');
+                        console.log('Test button clicked:', testId, testTitle); // Debug log
+                        await startTest(testId, testTitle);
                     });
                 });
 
@@ -1176,33 +1604,52 @@
             showLoading();
             postsContainer.innerHTML = '';
             noPostsFoundMessage.classList.add('hidden');
+            
             try {
+                let posts;
+                
+                // Check cache first
+                if (isCacheValid('posts')) {
+                    console.log('Using cached posts data');
+                    posts = cachedData.posts;
+                } else {
+                    console.log('Fetching fresh posts data');
                 const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
                 const q = query(postsColRef, orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
+                    posts = [];
+                    querySnapshot.forEach(doc => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Cache the data
+                    setCachedData('posts', posts);
+                }
+
+                if (posts.length === 0) {
                     noPostsFoundMessage.classList.remove('hidden');
                     hideLoading();
                     return;
                 }
 
-                querySnapshot.forEach(doc => {
-                    const postData = doc.data();
+                // Render posts with improved UI
+                posts.forEach(postData => {
                     const postCard = document.createElement('div');
-                    postCard.className = 'card p-6';
+                    postCard.className = 'card p-6 mb-4 hover:shadow-lg transition-shadow';
                     postCard.innerHTML = `
                         <h3 class="text-xl font-bold text-gray-800 mb-2">${postData.title}</h3>
-                        <p class="text-gray-600 mb-2">${postData.description}</p>
+                        <p class="text-gray-600 mb-3">${postData.description}</p>
                         <div class="flex items-center justify-between mb-3">
-                            <span class="text-sm text-gray-500">${postData.category || 'Uncategorized'}</span>
+                            <span class="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">${postData.category || 'Uncategorized'}</span>
                             <span class="text-sm text-gray-500">${postData.createdAt ? postData.createdAt.toDate().toLocaleDateString() : 'N/A'}</span>
                         </div>
                         ${postData.links && postData.links.length > 0 ? `
                             <div class="space-y-2">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-2">Study Resources:</h4>
                                 ${postData.links.map(link => `
-                                    <a href="${link}" target="_blank" class="block text-blue-600 hover:text-blue-800 text-sm">
-                                        <i class="fas fa-external-link-alt mr-1"></i>${link.includes('youtube.com') ? 'Watch Video' : 'View Resource'}
+                                    <a href="${link}" target="_blank" class="block text-blue-600 hover:text-blue-800 text-sm p-2 bg-blue-50 rounded hover:bg-blue-100 transition-colors">
+                                        <i class="fas fa-external-link-alt mr-2"></i>${link.includes('youtube.com') ? 'Watch Video' : 'View Resource'}
                                     </a>
                                 `).join('')}
                             </div>
@@ -1223,25 +1670,56 @@
             showLoading();
             postCategoriesContainer.innerHTML = '';
             noPostCategoriesMessage.classList.add('hidden');
+            
             try {
+                let categories;
+                
+                // Check cache first
+                if (isCacheValid('postCategories')) {
+                    console.log('Using cached post categories data');
+                    categories = cachedData.postCategories;
+                } else {
+                    console.log('Fetching fresh post categories data');
                 const postCategoriesColRef = collection(db, 'artifacts', appId, 'public', 'data', 'postCategories');
                 const querySnapshot = await getDocs(postCategoriesColRef);
 
-                if (querySnapshot.empty) {
+                    categories = [];
+                    querySnapshot.forEach(doc => {
+                        categories.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Cache the data
+                    setCachedData('postCategories', categories);
+                }
+
+                if (categories.length === 0) {
                     noPostCategoriesMessage.classList.remove('hidden');
                     hideLoading();
                     return;
                 }
 
-                querySnapshot.forEach(doc => {
-                    const categoryData = doc.data();
+                // Count posts per category for better UX (using cached posts if available)
+                let postCounts = {};
+                if (cachedData.posts) {
+                    cachedData.posts.forEach(post => {
+                        if (post.category) {
+                            postCounts[post.category] = (postCounts[post.category] || 0) + 1;
+                        }
+                    });
+                }
+
+                categories.forEach(categoryData => {
                     const categoryCard = document.createElement('div');
-                    categoryCard.className = 'card p-6';
+                    categoryCard.className = 'card p-6 hover:shadow-lg transition-shadow cursor-pointer';
+                    const postCount = postCounts[categoryData.title] || 0;
                     categoryCard.innerHTML = `
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${categoryData.title}</h3>
-                        <p class="text-gray-600 mb-4">${categoryData.description || 'No description available.'}</p>
-                        <button class="btn-primary w-full" onclick="loadPostsByCategory('${categoryData.title}')">
-                            View Posts
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">${categoryData.title}</h3>
+                            <span class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">${postCount} posts</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">${categoryData.description || 'Browse posts in this category.'}</p>
+                        <button class="btn-primary w-full hover:bg-blue-700 transition-colors" onclick="loadPostsByCategory('${categoryData.title}')">
+                            <i class="fas fa-folder-open mr-2"></i>View Posts
                         </button>
                     `;
                     postCategoriesContainer.appendChild(categoryCard);
@@ -1399,9 +1877,26 @@
             }
         });
 
+        // Enhanced startTest function with better error handling
         async function startTest(testId, testTitle) {
+            console.log('Starting test:', testId, testTitle); // Debug log
+            
+            if (!currentUser) {
+                showMessage('Please log in to take tests.');
+                return;
+            }
+            
+            // Check network connectivity
+            const isOnline = await checkNetworkConnectivity();
+            if (!isOnline) {
+                showMessage('Network connection failed. Please check your internet connection and try again.');
+                return;
+            }
+            
             showLoading();
+            
             try {
+                console.log('Fetching test data...'); // Debug log
                 const testDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'tests', testId);
                 const testDocSnap = await getDoc(testDocRef);
 
@@ -1411,19 +1906,43 @@
                     return;
                 }
 
-                currentTest = testDocSnap.data();
+                const testData = testDocSnap.data();
+                console.log('Test data loaded:', testData); // Debug log
+                
+                // Validate test data
+                if (!testData.questions || testData.questions.length === 0) {
+                    showMessage('This test has no questions available.');
+                    hideLoading();
+                    return;
+                }
+
+                currentTest = testData;
                 currentTestId = testId;
                 currentTestTitle = testTitle;
                 userAnswers = new Array(currentTest.questions.length).fill(null); // Initialize user answers
+                
+                console.log('Rendering test...'); // Debug log
                 renderTest();
                 showSection(testPageSection);
+                
+                console.log('Test started successfully'); // Debug log
             } catch (error) {
                 console.error('Error starting test:', error);
-                showMessage('Failed to load test. Please try again.');
+                let errorMessage = 'Failed to load test. Please try again.';
+                
+                if (error.code === 'auth/network-request-failed') {
+                    errorMessage = 'Network connection failed. Please check your internet connection.';
+                }
+                
+                showMessage(errorMessage);
             } finally {
                 hideLoading();
             }
         }
+        
+        // Make functions globally accessible for HTML onclick handlers
+        window.startTest = startTest;
+        window.loadPostsByCategory = loadPostsByCategory;
 
         function renderTest() {
             testTitleElement.textContent = currentTest.title;
@@ -1564,7 +2083,7 @@
 
         viewLeaderboardBtn.addEventListener('click', () => {
             if (currentTestId) {
-                loadLeaderboard(currentTestId, currentTestTitle);
+                loadTestLeaderboard(currentTestId, currentTestTitle);
             } else {
                 showMessage('No current test to view leaderboard for.');
             }
@@ -1574,7 +2093,7 @@
             showSection(resultsSection);
         });
 
-        async function loadLeaderboard(testId, testTitle) {
+        async function loadTestLeaderboard(testId, testTitle) {
             showLoading();
             leaderboardTestTitle.textContent = testTitle;
             leaderboardBody.innerHTML = '';
@@ -1647,53 +2166,217 @@
                 showMessage('Failed to load leaderboard. Please try again.');
             } finally {
                 hideLoading();
-                showSection(leaderboardSection);
+                showSection(testLeaderboardSection);
             }
         }
 
         async function loadPostsByCategory(categoryTitle) {
             showLoading();
-            postsContainer.innerHTML = '';
-            noPostsFoundMessage.classList.add('hidden');
+            postsByCategoryContainer.innerHTML = '';
+            noPostsInCategoryMessage.classList.add('hidden');
+            
+            // Switch to posts by category section
+            showSection(postsByCategorySection);
+            
+            // Update category title and count
+            postsCategoryTitle.textContent = `Posts in "${categoryTitle}"`;
+            
             try {
-                const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
-                const q = query(postsColRef, where('category', '==', categoryTitle), orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
+                let posts = [];
+                
+                // Try to use cached posts first for better performance
+                if (isCacheValid('posts') && cachedData.posts) {
+                    console.log('Using cached posts for category filtering');
+                    posts = cachedData.posts.filter(post => post.category === categoryTitle);
+                } else {
+                    console.log('Fetching posts from database for category:', categoryTitle);
+                    const postsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
+                    const q = query(postsColRef, where('category', '==', categoryTitle), orderBy('createdAt', 'desc'));
+                    const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    noPostsFoundMessage.classList.remove('hidden');
-                    showMessage(`No posts found in ${categoryTitle} category.`);
+                    querySnapshot.forEach(doc => {
+                        posts.push({ id: doc.id, ...doc.data() });
+                    });
+                }
+
+                // Update count
+                postsCategoryCount.textContent = `${posts.length} post${posts.length !== 1 ? 's' : ''} found`;
+
+                if (posts.length === 0) {
+                    noPostsInCategoryMessage.classList.remove('hidden');
                     hideLoading();
                     return;
                 }
 
-                querySnapshot.forEach(doc => {
-                    const postData = doc.data();
+                // Render posts
+                posts.forEach(post => {
                     const postCard = document.createElement('div');
-                    postCard.className = 'card p-6';
+                    postCard.className = 'card p-6 h-fit';
                     postCard.innerHTML = `
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${postData.title}</h3>
-                        <p class="text-gray-600 mb-2">${postData.description}</p>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-sm text-gray-500">${postData.category || 'Uncategorized'}</span>
-                            <span class="text-sm text-gray-500">${postData.createdAt ? postData.createdAt.toDate().toLocaleDateString() : 'N/A'}</span>
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-xl font-bold text-gray-800">${post.title}</h3>
+                            <span class="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded">${post.category}</span>
                         </div>
-                        ${postData.links && postData.links.length > 0 ? `
-                            <div class="space-y-2">
-                                ${postData.links.map(link => `
-                                    <a href="${link}" target="_blank" class="block text-blue-600 hover:text-blue-800 text-sm">
-                                        <i class="fas fa-external-link-alt mr-1"></i>${link.includes('youtube.com') ? 'Watch Video' : 'View Resource'}
-                                    </a>
-                                `).join('')}
+                        <p class="text-gray-600 mb-4 line-clamp-3">${post.description || 'No description available.'}</p>
+                        <div class="text-sm text-gray-500 mb-4">
+                            <p>Created: ${post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : 'Unknown'}</p>
+                        </div>
+                        ${post.links && post.links.length > 0 ? `
+                            <div class="border-t pt-4">
+                                <h4 class="font-semibold text-gray-700 mb-2">Links:</h4>
+                                <div class="space-y-1">
+                                    ${post.links.map(link => `
+                                        <a href="${link}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm block truncate">
+                                            <i class="fas fa-external-link-alt mr-1"></i>${link}
+                                        </a>
+                                    `).join('')}
+                                </div>
                             </div>
                         ` : ''}
                     `;
-                    postsContainer.appendChild(postCard);
+                    postsByCategoryContainer.appendChild(postCard);
                 });
 
             } catch (error) {
                 console.error('Error loading posts by category:', error);
                 showMessage('Failed to load posts for this category. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Load student leaderboard
+        async function loadLeaderboard() {
+            showLoading();
+            leaderboardContainer.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i>
+                    <p class="text-gray-600 mt-2">Loading leaderboard...</p>
+                </div>
+            `;
+
+            try {
+                // Get all test results to calculate rankings
+                const resultsRef = collection(db, 'artifacts', appId, 'testResults');
+                const resultsSnapshot = await getDocs(resultsRef);
+                
+                const userScores = new Map();
+                
+                resultsSnapshot.forEach(doc => {
+                    const result = doc.data();
+                    const userId = result.userId;
+                    const score = (result.score / result.totalQuestions) * 100;
+                    
+                    if (!userScores.has(userId)) {
+                        userScores.set(userId, {
+                            userId: userId,
+                            userName: result.userName || 'Anonymous',
+                            totalTests: 0,
+                            totalScore: 0,
+                            averageScore: 0,
+                            testDetails: []
+                        });
+                    }
+                    
+                    const userStats = userScores.get(userId);
+                    userStats.totalTests += 1;
+                    userStats.totalScore += score;
+                    userStats.averageScore = userStats.totalScore / userStats.totalTests;
+                    userStats.testDetails.push({
+                        testTitle: result.testTitle,
+                        score: score,
+                        date: result.timestamp
+                    });
+                });
+
+                // Convert to array and sort by average score
+                const leaderboardData = Array.from(userScores.values())
+                    .filter(user => user.totalTests > 0)
+                    .sort((a, b) => b.averageScore - a.averageScore);
+
+                if (leaderboardData.length === 0) {
+                    leaderboardContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-chart-bar text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-600">No test results available yet.</p>
+                            <p class="text-sm text-gray-500 mt-2">Complete some tests to see rankings!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Find current user's rank
+                const currentUserRank = leaderboardData.findIndex(user => user.userId === currentUser?.uid) + 1;
+                
+                // Create leaderboard HTML
+                let leaderboardHTML = '';
+                
+                if (currentUserRank > 0) {
+                    leaderboardHTML += `
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-blue-900">Your Ranking</h4>
+                                    <p class="text-blue-700">You are ranked #${currentUserRank} out of ${leaderboardData.length} students</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-2xl font-bold text-blue-600">${leaderboardData[currentUserRank - 1].averageScore.toFixed(1)}%</div>
+                                    <div class="text-sm text-blue-600">Average Score</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                leaderboardHTML += '<div class="space-y-3">';
+                
+                leaderboardData.slice(0, 20).forEach((user, index) => {
+                    const isCurrentUser = user.userId === currentUser?.uid;
+                    const rankColor = index === 0 ? 'text-yellow-600' : index === 1 ? 'text-gray-500' : index === 2 ? 'text-orange-600' : 'text-gray-400';
+                    const bgColor = isCurrentUser ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200';
+                    
+                    leaderboardHTML += `
+                        <div class="border ${bgColor} rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-2xl font-bold ${rankColor}">
+                                        ${index < 3 ? (index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉') : '#' + (index + 1)}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold ${isCurrentUser ? 'text-blue-900' : 'text-gray-900'}">${user.userName}</h4>
+                                        <p class="text-sm text-gray-600">${user.totalTests} test${user.totalTests !== 1 ? 's' : ''} completed</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-bold ${isCurrentUser ? 'text-blue-600' : 'text-gray-800'}">${user.averageScore.toFixed(1)}%</div>
+                                    <div class="text-sm text-gray-500">Average</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                leaderboardHTML += '</div>';
+                
+                if (leaderboardData.length > 20) {
+                    leaderboardHTML += `
+                        <div class="text-center mt-6 text-sm text-gray-500">
+                            Showing top 20 out of ${leaderboardData.length} students
+                        </div>
+                    `;
+                }
+
+                leaderboardContainer.innerHTML = leaderboardHTML;
+
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                leaderboardContainer.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                        <p class="text-red-600">Failed to load leaderboard.</p>
+                        <button onclick="loadLeaderboard()" class="btn-primary mt-4">Try Again</button>
+                    </div>
+                `;
             } finally {
                 hideLoading();
             }
@@ -1797,19 +2480,27 @@
 
 
         // --- Authentication State Change Listener ---
+        console.log('Setting up auth state listener...'); // Debug log
         onAuthStateChanged(auth, async (user) => {
+            console.log('Auth state changed:', user ? `User: ${user.email}` : 'No user'); // Debug log
             if (user) {
                 currentUser = user;
+                console.log('User authenticated, showing content section'); // Debug log
                 authSection.classList.add('hidden');
                 contentSection.classList.remove('hidden');
 
-                // Fetch user data from Firestore
+                // Fetch user data from Firestore (with caching)
+                try {
                 const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid);
                 const userDocSnap = await getDoc(userDocRef);
 
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
                     userNameDisplay.textContent = userData.name || userData.email;
+                        
+                        // Cache user data for faster subsequent loads
+                        localStorage.setItem(`user_${user.uid}`, JSON.stringify(userData));
+                        
                     // Check if 'name' was just set (implies first login via email/pass signup)
                     // Or if it's a new Google sign-in where displayName wasn't saved before
                     if (userData.name === 'Student' && !user.displayName) { // Basic check for first login
@@ -1822,12 +2513,38 @@
                     // but as a fallback, display email
                     userNameDisplay.textContent = user.email;
                     firstLoginMessage.classList.remove('hidden'); // Treat as first login
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                    // Try to use cached user data
+                    const cachedUserData = localStorage.getItem(`user_${user.uid}`);
+                    if (cachedUserData) {
+                        const userData = JSON.parse(cachedUserData);
+                        userNameDisplay.textContent = userData.name || userData.email;
+                    } else {
+                        userNameDisplay.textContent = user.email;
+                    }
                 }
 
-                // Initial data load for authenticated users
+                // Initial data load for authenticated users (optimized for performance)
                 showSection(homeSection);
+                
+                // Load critical data immediately
                 loadRecentFeed();
                 loadPastResults();
+                
+                // Preload other data in background for better navigation experience
+                setTimeout(() => {
+                    if (!isCacheValid('posts')) {
+                        loadPosts().catch(console.error);
+                    }
+                    if (!isCacheValid('postCategories')) {
+                        loadPostCategories().catch(console.error);
+                    }
+                }, 1000);
+
+                // Setup lazy loading after DOM is ready
+                setTimeout(setupLazyLoading, 1500);
 
             } else {
                 currentUser = null;
@@ -1840,11 +2557,21 @@
                 nameInput.value = '';
                 phoneInput.value = '';
                 welcomeMessage.classList.add('hidden'); // Hide welcome message on logout
+                
+                // Clear sensitive cached data on logout
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('user_') || key.startsWith('otp_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
             }
         });
 
         // --- Initial Firebase Authentication for Canvas Environment ---
         window.onload = async function() {
+            console.log('Page loaded, initializing authentication...'); // Debug log
+            
+            // Direct authentication initialization - no email verification needed
             if (initialAuthToken) {
                 try {
                     await signInWithCustomToken(auth, initialAuthToken);
@@ -1867,6 +2594,28 @@
                     console.error("Error signing in anonymously:", error);
                 }
             }
+            
+            // Final initialization check
+            console.log('Authentication system ready. Elements status:', {
+                auth: !!auth,
+                db: !!db,
+                authForm: !!authForm,
+                emailInput: !!emailInput,
+                passwordInput: !!passwordInput
+            });
+
+            // Debug: Check all major sections exist
+            console.log('Section elements check:', {
+                homeSection: !!homeSection,
+                postsSection: !!postsSection,
+                profileSection: !!profileSection,
+                testCategoriesSection: !!testCategoriesSection,
+                postCategoriesSection: !!postCategoriesSection,
+                postsByCategorySection: !!postsByCategorySection,
+                allTestsSection: !!allTestsSection,
+                leaderboardSection: !!leaderboardSection,
+                testLeaderboardSection: !!testLeaderboardSection
+            });
         };
 
         // --- Firestore Data Seeding (for initial setup) ---
