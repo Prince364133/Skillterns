@@ -571,6 +571,14 @@
                 <div id="editQuestionsContainer" class="space-y-4 border p-4 rounded-lg bg-gray-50">
                     <!-- Questions will be loaded here dynamically for editing -->
                 </div>
+                <button type="button" id="addEditQuestionBtn" class="btn-secondary w-full">Add Another Question</button>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="cancelEditTestBtn" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Edit Post Modal -->
     <div id="editPostModal" class="modal hidden">
@@ -601,14 +609,6 @@
                 <div class="flex gap-4">
                     <button type="submit" class="btn-primary flex-1">Update Post</button>
                     <button type="button" id="cancelEditPostBtn" class="btn-secondary flex-1">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-                <button type="button" id="addEditQuestionBtn" class="btn-secondary w-full">Add Another Question</button>
-                <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" id="cancelEditTestBtn" class="btn-secondary">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -1583,6 +1583,49 @@
          * Handles saving changes to an MCQ test.
          */
         editTestForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            const testId = editTestIdInput.value;
+            const testTitle = editTestTitleInput.value.trim();
+            const testCategoryId = editTestCategorySelect.value;
+            const testCategoryName = editTestCategorySelect.options[editTestCategorySelect.selectedIndex].textContent;
+
+            if (!testTitle || !testCategoryId) {
+                showCustomModal("Input Error", "Please fill in test title and select a category.");
+                hideLoading();
+                return;
+            }
+
+            const questions = getQuestionsFromContainer(editQuestionsContainer);
+            if (!questions) {
+                hideLoading();
+                return;
+            }
+
+            if (questions.length === 0) {
+                showCustomModal("Input Error", "Please add at least one question to the test.");
+                hideLoading();
+                return;
+            }
+
+            try {
+                const testDocRef = doc(db, `artifacts/${appId}/public/data/tests`, testId);
+                await updateDoc(testDocRef, {
+                    title: testTitle,
+                    category: testCategoryName, // Use category name for student compatibility
+                    questions: questions,
+                    updatedAt: new Date() // Add an update timestamp
+                });
+                showCustomModal("Success", `Test "${testTitle}" updated successfully!`);
+                editTestModal.classList.add('hidden'); // Close modal
+            } catch (error) {
+                console.error("Error updating test:", error);
+                showCustomModal("Error", "Failed to update test.");
+            } finally {
+                hideLoading();
+            }
+        });
 
         /**
          * Opens the edit post modal and populates it with post data.
@@ -1688,49 +1731,6 @@
         // Event listeners for edit post modal
         cancelEditPostBtn.addEventListener('click', () => {
             editPostModal.classList.add('hidden');
-        });
-            e.preventDefault();
-            showLoading();
-
-            const testId = editTestIdInput.value;
-            const testTitle = editTestTitleInput.value.trim();
-            const testCategoryId = editTestCategorySelect.value;
-            const testCategoryName = editTestCategorySelect.options[editTestCategorySelect.selectedIndex].textContent;
-
-            if (!testTitle || !testCategoryId) {
-                showCustomModal("Input Error", "Please fill in test title and select a category.");
-                hideLoading();
-                return;
-            }
-
-            const questions = getQuestionsFromContainer(editQuestionsContainer);
-            if (!questions) {
-                hideLoading();
-                return;
-            }
-
-            if (questions.length === 0) {
-                showCustomModal("Input Error", "Please add at least one question to the test.");
-                hideLoading();
-                return;
-            }
-
-            try {
-                const testDocRef = doc(db, `artifacts/${appId}/public/data/tests`, testId);
-                await updateDoc(testDocRef, {
-                    title: testTitle,
-                    category: testCategoryName, // Use category name for student compatibility
-                    questions: questions,
-                    updatedAt: new Date() // Add an update timestamp
-                });
-                showCustomModal("Success", `Test "${testTitle}" updated successfully!`);
-                editTestModal.classList.add('hidden'); // Close modal
-            } catch (error) {
-                console.error("Error updating test:", error);
-                showCustomModal("Error", "Failed to update test.");
-            } finally {
-                hideLoading();
-            }
         });
 
         // Cancel button for Edit Test Modal
