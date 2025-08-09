@@ -302,6 +302,7 @@
             <div id="navLinks" class="hidden md:flex items-center space-x-4">
                 <a href="#" id="homeNav" class="nav-link text-gray-700 font-medium">Home</a>
                 <a href="#" id="postsNav" class="nav-link text-gray-700 font-medium">Posts</a>
+                <a href="#" id="profileNav" class="nav-link text-gray-700 font-medium">Profile</a>
                 <a href="#" id="testCategoriesNav" class="nav-link text-gray-700 font-medium">Test Categories</a>
                 <a href="#" id="postCategoriesNav" class="nav-link text-gray-700 font-medium">Post Categories</a>
                 <a href="#" id="allTestsNav" class="nav-link text-gray-700 font-medium">All Tests</a>
@@ -316,6 +317,7 @@
         <div id="mobileNavMenu" class="md:hidden bg-white shadow-md py-2 px-4 hidden">
             <a href="#" id="homeNavMobile" class="block nav-link text-gray-700 font-medium py-2">Home</a>
             <a href="#" id="postsNavMobile" class="block nav-link text-gray-700 font-medium py-2">Posts</a>
+            <a href="#" id="profileNavMobile" class="block nav-link text-gray-700 font-medium py-2">Profile</a>
             <a href="#" id="testCategoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Test Categories</a>
             <a href="#" id="postCategoriesNavMobile" class="block nav-link text-gray-700 font-medium py-2">Post Categories</a>
             <a href="#" id="allTestsNavMobile" class="block nav-link text-gray-700 font-medium py-2">All Tests</a>
@@ -375,7 +377,7 @@
                 <p id="firstLoginMessage" class="text-sm mt-1 hidden">It's great to have you here. Let's start learning!</p>
             </div>
 
-            <!-- Home Section: Recent Feed and Categories -->
+            <!-- Home Section: Recent Feed -->
             <div id="homeSection" class="mb-8">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Welcome to Skillyterns</h2>
                 <!-- Recent Combined Feed -->
@@ -383,15 +385,6 @@
                     <h3 class="text-2xl font-bold text-gray-800 mb-4">Recent Posts & Tests</h3>
                     <div id="recentFeedContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                     <p id="noRecentMessage" class="text-gray-600 text-center mt-8 hidden">No recent items found. Please check back later!</p>
-                </div>
-
-                <!-- Test Categories Section -->
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Explore Test Categories</h3>
-                    <div id="categoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Categories will be loaded here dynamically -->
-                    </div>
-                    <p id="noCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No categories found. Please check back later!</p>
                 </div>
             </div>
 
@@ -407,18 +400,38 @@
                 <p id="noPostsFoundMessage" class="text-gray-600 text-center mt-8 hidden">No posts found. Try adjusting your search!</p>
             </div>
 
+            <!-- Profile Section -->
+            <div id="profileSection" class="hidden mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Your Profile</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Account Info</h3>
+                        <p class="text-gray-600"><span class="font-semibold">Name:</span> <span id="profileName"></span></p>
+                        <p class="text-gray-600"><span class="font-semibold">Email:</span> <span id="profileEmail"></span></p>
+                        <p class="text-gray-600"><span class="font-semibold">Phone:</span> <span id="profilePhone"></span></p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Performance</h3>
+                        <p class="text-gray-600"><span class="font-semibold">Tests Taken:</span> <span id="profileTestsTaken">0</span></p>
+                        <p class="text-gray-600"><span class="font-semibold">Total Marks:</span> <span id="profileTotalMarks">0</span></p>
+                        <button id="viewMyRankBtn" class="btn-primary mt-4">View My Rank</button>
+                        <p id="myRankDisplay" class="text-gray-700 mt-3"></p>
+                    </div>
+                </div>
+                </div>
+
             <!-- Test Categories Section -->
             <div id="testCategoriesSection" class="hidden mb-8">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Test Categories</h2>
                 <div id="testCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 <p id="noTestCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No test categories found.</p>
-            </div>
+                    </div>
 
             <!-- Post Categories Section -->
             <div id="postCategoriesSection" class="hidden mb-8">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Post Categories</h2>
                 <div id="postCategoriesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                <p id="noPostCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No post categories found.</p>
+                    <p id="noPostCategoriesMessage" class="text-gray-600 text-center mt-8 hidden">No post categories found.</p>
             </div>
 
             <!-- All Tests Section -->
@@ -484,6 +497,31 @@
                     <p id="noLeaderboardData" class="text-gray-600 text-center mt-4 hidden">No results found for this test yet.</p>
                 </div>
                 <button id="backToResultsBtn" class="mt-8 btn-primary">Back to Results</button>
+            </div>
+
+            <!-- Overall Leaderboard (My Rank) Section -->
+            <div id="overallLeaderboardSection" class="hidden">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Overall Leaderboard</h2>
+                <p id="myOverallRankBanner" class="text-gray-700 mb-6"></p>
+                <div class="bg-white card p-6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Points</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tests Count</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overallLeaderboardBody" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button id="backToProfileBtn" class="btn-primary">Back to Profile</button>
+                </div>
             </div>
 
             <!-- Past Results Section -->
@@ -587,12 +625,14 @@
         const mobileNavMenu = document.getElementById('mobileNavMenu');
         const homeNav = document.getElementById('homeNav');
         const postsNav = document.getElementById('postsNav');
+        const profileNav = document.getElementById('profileNav');
         const testCategoriesNav = document.getElementById('testCategoriesNav');
         const postCategoriesNav = document.getElementById('postCategoriesNav');
         const allTestsNav = document.getElementById('allTestsNav');
         const logoutNav = document.getElementById('logoutNav');
         const homeNavMobile = document.getElementById('homeNavMobile');
         const postsNavMobile = document.getElementById('postsNavMobile');
+        const profileNavMobile = document.getElementById('profileNavMobile');
         const testCategoriesNavMobile = document.getElementById('testCategoriesNavMobile');
         const postCategoriesNavMobile = document.getElementById('postCategoriesNavMobile');
         const allTestsNavMobile = document.getElementById('allTestsNavMobile');
@@ -604,9 +644,15 @@
 
         const homeSection = document.getElementById('homeSection');
         const recentFeedContainer = document.getElementById('recentFeedContainer');
-        const categoriesContainer = document.getElementById('categoriesContainer');
-        const noCategoriesMessage = document.getElementById('noCategoriesMessage');
         const noRecentMessage = document.getElementById('noRecentMessage');
+        const profileSection = document.getElementById('profileSection');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const profilePhone = document.getElementById('profilePhone');
+        const profileTestsTaken = document.getElementById('profileTestsTaken');
+        const profileTotalMarks = document.getElementById('profileTotalMarks');
+        const viewMyRankBtn = document.getElementById('viewMyRankBtn');
+        const myRankDisplay = document.getElementById('myRankDisplay');
 
         const postsSection = document.getElementById('postsSection');
         const postSearchInput = document.getElementById('postSearchInput');
@@ -619,6 +665,10 @@
         const postCategoriesContainer = document.getElementById('postCategoriesContainer');
         const noTestCategoriesMessage = document.getElementById('noTestCategoriesMessage');
         const noPostCategoriesMessage = document.getElementById('noPostCategoriesMessage');
+        const overallLeaderboardSection = document.getElementById('overallLeaderboardSection');
+        const overallLeaderboardBody = document.getElementById('overallLeaderboardBody');
+        const myOverallRankBanner = document.getElementById('myOverallRankBanner');
+        const backToProfileBtn = document.getElementById('backToProfileBtn');
 
         const allTestsSection = document.getElementById('allTestsSection');
         const testSearchInput = document.getElementById('testSearchInput');
@@ -819,15 +869,24 @@
             e.preventDefault();
             showSection(homeSection);
             loadRecentFeed();
-            loadCategories();
             loadPastResults(); // Load past results on home/dashboard
         });
         homeNavMobile.addEventListener('click', (e) => {
             e.preventDefault();
             showSection(homeSection);
             loadRecentFeed();
-            loadCategories();
             loadPastResults();
+            mobileNavMenu.classList.add('hidden');
+        });
+        profileNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(profileSection);
+            loadProfile();
+        });
+        profileNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(profileSection);
+            loadProfile();
             mobileNavMenu.classList.add('hidden');
         });
 
@@ -840,6 +899,18 @@
             e.preventDefault();
             showSection(postsSection);
             loadPosts();
+            mobileNavMenu.classList.add('hidden');
+        });
+
+        profileNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(profileSection);
+            loadProfile();
+        });
+        profileNavMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(profileSection);
+            loadProfile();
             mobileNavMenu.classList.add('hidden');
         });
 
@@ -885,6 +956,44 @@
 
         // --- Data Loading Functions ---
 
+        // Profile logic
+        async function loadProfile() {
+            if (!currentUser) return;
+            showLoading();
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid);
+                const userSnap = await getDoc(userDocRef);
+                if (userSnap.exists()) {
+                    const u = userSnap.data();
+                    profileName.textContent = u.name || 'Student';
+                    profileEmail.textContent = u.email || currentUser.email || 'N/A';
+                    profilePhone.textContent = u.phone || u.phoneNumber || 'N/A';
+                } else {
+                    profileName.textContent = currentUser.displayName || 'Student';
+                    profileEmail.textContent = currentUser.email || 'N/A';
+                    profilePhone.textContent = currentUser.phoneNumber || 'N/A';
+                }
+
+                const resultsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'results');
+                const q = query(resultsColRef, where('userId', '==', currentUser.uid));
+                const resultsSnap = await getDocs(q);
+                let testsTaken = 0;
+                let totalMarksVal = 0;
+                resultsSnap.forEach(d => {
+                    const r = d.data();
+                    testsTaken += 1;
+                    totalMarksVal += (r.score || 0);
+                });
+                profileTestsTaken.textContent = `${testsTaken}`;
+                profileTotalMarks.textContent = `${totalMarksVal}`;
+            } catch (e) {
+                console.error('Error loading profile:', e);
+                showMessage('Failed to load profile.');
+            } finally {
+                hideLoading();
+            }
+        }
+
         async function loadCategories() {
             showLoading();
             categoriesContainer.innerHTML = '';
@@ -905,21 +1014,7 @@
                     categories.push({ id: doc.id, ...doc.data() });
                 });
 
-                for (const category of categories) {
-                    const categoryCard = document.createElement('div');
-                    categoryCard.className = 'card category-card p-4 rounded-lg shadow-md flex flex-col items-center justify-center text-center transform hover:scale-105 transition-transform duration-200';
-                    categoryCard.innerHTML = `
-                        <i class="fas fa-folder text-4xl text-blue-500 mb-3"></i>
-                        <h3 class="text-xl font-semibold text-gray-800">${category.title}</h3>
-                        <p class="text-gray-600 text-sm mt-1">Click to view tests</p>
-                        <div class="mt-3 w-full flex gap-2">
-                            <button class="btn-primary flex-1" onclick="loadTestsByCategory('${category.title}')">View Tests</button>
-                            <button class="like-btn flex-1" onclick="showSection(document.getElementById('testCategoriesSection')); loadTestCategoriesSection();"><i class="far fa-folder-open mr-2"></i>More</button>
-                        </div>
-                    `;
-                    categoryCard.addEventListener('click', () => loadTestsByCategory(category.title));
-                    categoriesContainer.appendChild(categoryCard);
-                }
+                // No-op now; categories block removed from home.
             } catch (error) {
                 console.error('Error loading categories:', error);
                 showMessage('Failed to load categories. Please try again.');
@@ -970,21 +1065,22 @@
                 // Render up to 12 most recent alternating naturally by sort
                 items.slice(0, 12).forEach(item => {
                     if (item.type === 'post') {
-                        const postCard = document.createElement('div');
-                        postCard.className = 'card p-6';
+                    const postCard = document.createElement('div');
+                    postCard.className = 'card p-6';
                         const desc = item.data.description || '';
-                        postCard.innerHTML = `
+                    postCard.innerHTML = `
                             <div class="flex items-start justify-between mb-2">
                                 <h3 class="text-xl font-bold text-gray-800">${item.data.title}</h3>
                                 <span class="text-xs px-2 py-1 bg-indigo-50 text-indigo-600 rounded">Post</span>
-                            </div>
+                        </div>
                             <p class="text-gray-600 mb-3 text-sm">${desc.substring(0, 120)}${desc.length > 120 ? '...' : ''}</p>
                             <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
                                 <span>${item.data.category || 'Uncategorized'}</span>
                                 <span>${item.createdAt.toLocaleDateString()}</span>
                             </div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-3">
                                 <button class="like-btn" data-type="post" data-id="${item.id}"><i class="far fa-heart mr-2"></i>Like</button>
+                                <span class="text-sm text-gray-500" data-like-count="post:${item.id}">0</span>
                                 ${item.data.links && item.data.links.length > 0 ? `<a href="${item.data.links[0]}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm"><i class="fas fa-external-link-alt mr-1"></i>Open</a>` : ''}
                             </div>
                         `;
@@ -1003,15 +1099,15 @@
                                 <span>${item.createdAt.toLocaleDateString()}</span>
                             </div>
                             <p class="text-sm text-gray-600 mb-4">${qCount} questions</p>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-3">
                                 <button class="like-btn" data-type="test" data-id="${item.id}"><i class="far fa-heart mr-2"></i>Like</button>
+                                <span class="text-sm text-gray-500" data-like-count="test:${item.id}">0</span>
                                 <button class="btn-primary flex-1" onclick="startTest('${item.id}', '${item.data.title.replace(/'/g, "&#39;")}')">Start Test</button>
                             </div>
                         `;
                         recentFeedContainer.appendChild(testCard);
                     }
                 });
-
                 // Bind like buttons
                 recentFeedContainer.querySelectorAll('.like-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
@@ -1021,6 +1117,11 @@
                         await toggleLike(itemType, itemId, el);
                     });
                 });
+
+                // Load like state and counts
+                await Promise.all(items.slice(0, 12).map(async (item) => {
+                    await updateLikeStateAndCount(item.type, item.id);
+                }));
 
             } catch (error) {
                 console.error('Error loading recent feed:', error);
@@ -1033,8 +1134,8 @@
         async function toggleLike(itemType, itemId, buttonEl) {
             if (!currentUser) {
                 showMessage('Please login to like items.');
-                return;
-            }
+                    return;
+                }
             try {
                 const likeDocRef = doc(db, 'artifacts', appId, 'public', 'data', itemType === 'post' ? 'posts' : 'tests', itemId, 'likes', currentUser.uid);
                 const likeSnap = await getDoc(likeDocRef);
@@ -1045,9 +1146,29 @@
                     await setDoc(likeDocRef, { userId: currentUser.uid, likedAt: new Date() });
                     buttonEl.innerHTML = '<i class="fas fa-heart text-rose-500 mr-2"></i>Liked';
                 }
+                await updateLikeStateAndCount(itemType, itemId);
             } catch (err) {
                 console.error('Error toggling like:', err);
                 showMessage('Could not update like.');
+            }
+        }
+
+        async function updateLikeStateAndCount(itemType, itemId) {
+            try {
+                const likesColRef = collection(db, 'artifacts', appId, 'public', 'data', itemType === 'post' ? 'posts' : 'tests', itemId, 'likes');
+                const likesSnap = await getDocs(likesColRef);
+                const count = likesSnap.size;
+                const countEl = document.querySelector(`[data-like-count="${itemType}:${itemId}"]`);
+                if (countEl) countEl.textContent = `${count}`;
+
+                if (currentUser) {
+                    const likeDocRef = doc(db, 'artifacts', appId, 'public', 'data', itemType === 'post' ? 'posts' : 'tests', itemId, 'likes', currentUser.uid);
+                    const likeSnap = await getDoc(likeDocRef);
+                    const btn = document.querySelector(`.like-btn[data-type="${itemType}"][data-id="${itemId}"]`);
+                    if (btn) btn.innerHTML = likeSnap.exists() ? '<i class="fas fa-heart text-rose-500 mr-2"></i>Liked' : '<i class="far fa-heart mr-2"></i>Like';
+                }
+            } catch (e) {
+                console.error('Error loading like count:', e);
             }
         }
 
@@ -1437,7 +1558,7 @@
 
         takeAnotherTestBtn.addEventListener('click', () => {
             showSection(homeSection);
-            loadCategories();
+            loadRecentFeed();
             loadPastResults();
         });
 
@@ -1705,7 +1826,7 @@
 
                 // Initial data load for authenticated users
                 showSection(homeSection);
-                loadCategories();
+                loadRecentFeed();
                 loadPastResults();
 
             } else {
